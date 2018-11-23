@@ -52,7 +52,7 @@ alexaApp.intent("SearchIntent", {
 
     console.log(request.slot('PRODUCT'));
 
-    response.say("Hallo" + request.slot("PRODUCT") + "! Schön dich zu sehen");
+    response.say("Hallo " + request.slot("PRODUCT") + "! Schön dich zu sehen");
     response.shouldEndSession(false);
   }
 );
