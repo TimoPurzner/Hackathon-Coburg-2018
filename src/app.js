@@ -42,32 +42,40 @@ alexaApp.launch(function(request, response) {
   response.shouldEndSession(false);
 });
 
-const files = fs.readdirSync('dictionaries');
-for (var file in files){
+var files = fs.readdirSync('dictionaries');
+for (var file in files) {
   file = files[file];
-  console.log('F:', file);
   const file_content = fs.readFileSync(path.join('dictionaries', file));
   const file_name = path.basename(file, '.csv');
-  console.log(file, file_name, file_content.toString().trim().split('\r\n').length);
-  alexaApp.dictionary[file_name] = file_content.toString().trim().split('\r\n');
+  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+}
+
+files = fs.readdirSync('slots');
+for (var file in files) {
+  file = files[file];
+  const file_content = fs.readFileSync(path.join('slots', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
     "slots": {
-      "PRODUCT": "NAME"
+      "PRODUCT": "NAME",
+      "CATEGORY": "CATEGORY",
+      "BRAND": "BRAND",
     },
     "utterances": [
-      "Ich {verb} {quantity} {size|colour|weight} {PRODUCT|category}",
-      "Ich {verb} {quantity} {brand} {size|colour|weight} {PRODUCT|category}",
-      "Wir {verb} (attribute} {size|colour|weight}  {PRODUCT|category} von {brand}",
-      "Ich {verb} {quantity} {size|colour|weight} {PRODUCT|category} von {brand}",
-      "Wir {verb} {attribute} {size|colour|weight} {PRODUCT|category}",
-      "{verb} mir {quantity} {size|colour|weight} {PRODUCT} von {brand}",
-      "{verb} uns {size|colour|weight} {brand} {PRODUCT}",
-      "{verb} mir {PRODUCT|category}",
-      "{verb} mir {brand} Produkte",
-      "{verb} uns {quantity} {size|colour|weight} {brand} {PRODUCT}",
-    ]
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+      "{verb} mir {PRODUCT|CATEGORY}",
+      "{verb} mir {BRAND} Produkte",
+      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+    ],
   },
   function(request, response) {
 
@@ -111,8 +119,11 @@ alexaApp.intent("AMAZON.StopIntent", function () {
   console.log('Stopped :(');
 });
 
-if (process.env.NODE_ENV === 'development') {
-  console.log(alexaApp.schemas.skillBuilder());
+if (process.env.NODE_ENV !== 'production') {
+  fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
+    if (err) throw err;
+    console.log('Wrote schema.json');
+  });
 }
 
 app.listen(PORT);
