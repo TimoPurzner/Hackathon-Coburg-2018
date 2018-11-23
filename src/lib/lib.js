@@ -10,7 +10,7 @@ var request = require('request');
  */
 function getProductQueryString (... queryParams) {
     return 'there is nothing here yet';
-};
+}
 
 /**
  * Returns an object with filter options for search query (query string example: 'iphone')
@@ -45,11 +45,11 @@ function getProductURL (masterSku, sku) {
 
 /**
  * Returns URL of top product by search query (query string example: 'iphone')
- * @param spreadParam: queryParams
+ * @param string: query
  * @return Object: {name, imageURL, url, description, brand}
  *
  */
-function getTopProduct (... queryParams) {
+function getTopProduct (query) {
     let productInformation = {
         name: '',
         imageURL: '',
@@ -77,7 +77,7 @@ function getTopProduct (... queryParams) {
                         'channel': 'web',
                         'locale': 'de_DE',
                         'count': 1,
-                        'query': 'iphones'
+                        'query': query
                     }
                 },
                 function (error, response, body) {
