@@ -51,5 +51,10 @@ alexaApp.intent("SearchIntent", {
   }
 );
 
+
+alexaApp.intent("AMAZON.StopIntent", function () {
+  console.log('Stopped :(');
+});
+
 app.listen(PORT);
 console.log("Listening on port " + PORT);
