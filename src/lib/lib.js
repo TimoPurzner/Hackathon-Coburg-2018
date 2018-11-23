@@ -1,4 +1,4 @@
-
+var request = require('request');
 
 
 /**
@@ -8,17 +8,17 @@
  *
  * TODO: decide if we actually want to keep this shit
  */
-export function getProductQueryString (... queryParams) {
-    return "there is nothing here yet";
-}
+function getProductQueryString (... queryParams) {
+    return 'there is nothing here yet';
+};
 
 /**
- * Returns an object with filter options for search query (query string example: "iphone")
+ * Returns an object with filter options for search query (query string example: 'iphone')
  * @param string: query
  * @return Object: filterOptions
  *
  */
-export function getFilterOptions (query) {
+function getFilterOptions (query) {
     return {};
 }
 
@@ -28,8 +28,8 @@ export function getFilterOptions (query) {
  * @return string: URL
  *
  */
-export function getProductImageURL (imageId) {
-    return "there is nothing here yet";
+function getProductImageURL (imageId) {
+    return 'https://media.baur.de/i/empiriecom/' + imageId;
 }
 
 /**
@@ -39,16 +39,63 @@ export function getProductImageURL (imageId) {
  * @return string: URL
  *
  */
-export function getProductURL (masterSku, sku) {
-    return "there is nothing here yet";
+function getProductURL (masterSku, sku) {
+    return 'https://www.baur.de/p/' + masterSku + '#sku=' + sku;
 }
 
 /**
- * Returns URL of top product by search query (query string example: "iphone")
+ * Returns URL of top product by search query (query string example: 'iphone')
  * @param spreadParam: queryParams
- * @return Object: {productName, productImageURL, productURL, productDescription}
+ * @return Object: {name, imageURL, url, description, brand}
  *
  */
-export function getTopProduct (... queryParams) {
-    return {};
+function getTopProduct (... queryParams) {
+    let productInformation = {
+        name: '',
+        imageURL: '',
+        url: '',
+        description: '',
+        brand: ''
+    };
+
+    request(
+        {
+            method: 'POST',
+            uri: 'https://www.baur.de/suche/serp/magellan',
+            json: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': '*/*',
+                'user-agent':'*'
+            },
+            body: {
+                'start': 0,
+                'clientId': 'BaurDe',
+                'version': 42,
+                'channel': 'web',
+                'locale': 'de_DE',
+                'count': 1,
+                'query': 'iphones'
+            }
+        },
+        function (error, response, body) {
+            if(response.statusCode === 200){
+                let info = response.body.searchresult.result.styles[0];
+
+                productInformation = {
+                    name: info.nameNoBrand,
+                    imageURL: getProductImageURL(info.images),
+                    url: getProductURL(info.masterSku, info.sku),
+                    description: info.description,
+                    brand: info.brand
+                };
+
+            } else {
+                console.log('error: '+ response.statusCode);
+            }
+        }
+    );
+    return productInformation;
 }
+
+module.exports.getTopProduct = getTopProduct;
