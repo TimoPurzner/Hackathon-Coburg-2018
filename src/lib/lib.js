@@ -58,44 +58,49 @@ function getTopProduct (... queryParams) {
         brand: ''
     };
 
-    request(
-        {
-            method: 'POST',
-            uri: 'https://www.baur.de/suche/serp/magellan',
-            json: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'accept': '*/*',
-                'user-agent':'*'
-            },
-            body: {
-                'start': 0,
-                'clientId': 'BaurDe',
-                'version': 42,
-                'channel': 'web',
-                'locale': 'de_DE',
-                'count': 1,
-                'query': 'iphones'
-            }
-        },
-        function (error, response, body) {
-            if(response.statusCode === 200){
-                let info = response.body.searchresult.result.styles[0];
+    return new Promise(
+        function (resolve, reject) {
+            request(
+                {
+                    method: 'POST',
+                    uri: 'https://www.baur.de/suche/serp/magellan',
+                    json: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': '*/*',
+                        'user-agent':'*'
+                    },
+                    body: {
+                        'start': 0,
+                        'clientId': 'BaurDe',
+                        'version': 42,
+                        'channel': 'web',
+                        'locale': 'de_DE',
+                        'count': 1,
+                        'query': 'iphones'
+                    }
+                },
+                function (error, response, body) {
+                    if(response.statusCode === 200){
+                        let info = response.body.searchresult.result.styles[0];
 
-                productInformation = {
-                    name: info.nameNoBrand,
-                    imageURL: getProductImageURL(info.images),
-                    url: getProductURL(info.masterSku, info.sku),
-                    description: info.description,
-                    brand: info.brand
-                };
+                        productInformation = {
+                            name: info.nameNoBrand,
+                            imageURL: getProductImageURL(info.images),
+                            url: getProductURL(info.masterSku, info.sku),
+                            description: info.description.replace(/<[^>]+>/g, ' '),
+                            brand: info.brand
+                        };
 
-            } else {
-                console.log('error: '+ response.statusCode);
-            }
-        }
-    );
-    return productInformation;
+                        resolve(productInformation);
+                    } else {
+                        reject({error: 'could not retrieve top product'});
+                        console.log('error: '+ response.statusCode);
+                    }
+                }
+            );
+        });
+
 }
 
 module.exports.getTopProduct = getTopProduct;
