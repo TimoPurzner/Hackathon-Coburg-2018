@@ -50,15 +50,40 @@ alexaApp.intent("SearchIntent", {
     ]
   },
   function(request, response) {
-    //response.say('Ich suche jetzt!').pause('1s');
-    // "https://www.baur.de/suche/serp/magellan?query=iphone&start=72&locale=de_DE&count=24&clientId=BaurDe&filterValues=filter_color%3Df72&order=price-asc"
-    // var element = johnslib.search({});
 
-    console.log(request.slot('PRODUCT'));
+    let test= {
+      name: "Kleid",
+      comp: "Apple"
+    };
+    //await search
+    response.say("Ich habe " + test.name + " von " + test.comp + " gefunden");
+    response.say("Willst du mehr Informationen zu dem Produkt?");
+    response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+    // Save relevant infos in session
 
-    response.say("Hallo " + request.slot("PRODUCT") + "! Schön dich zu sehen");
-    response.shouldEndSession(false);
+
   }
+);
+
+alexaApp.intent("FilterIntent", {
+        "slots": {
+            "PRODUCT": "NAME"
+        },
+        "utterances": [
+            "Zeig mir vorhandene Filter"
+        ]
+    },
+    function(request, response) {
+
+        let test= {
+            name: "Kleid",
+            comp: "Apple"
+        };
+        //await search
+        response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
+
+
+    }
 );
 
 
