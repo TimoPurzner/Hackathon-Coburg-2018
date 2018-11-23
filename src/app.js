@@ -40,61 +40,65 @@ alexaApp.launch(function (request, response) {
         .pause('100ms')
         .say('Wonach suchst du heute?');
 
-    response.say(speech.ssml(true));
+    response.say(speech.ssml(true)).reprompt('Ich war grade abgelenkt, kannst du das bitte nochmal sagen?');
     response.shouldEndSession(false);
 });
 
 var files = fs.readdirSync('dictionaries');
 for (var file in files) {
-  file = files[file];
-  const file_content = fs.readFileSync(path.join('dictionaries', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+    file = files[file];
+    const file_content = fs.readFileSync(path.join('dictionaries', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
 }
 
 files = fs.readdirSync('slots');
 for (var file in files) {
-  file = files[file];
-  const file_content = fs.readFileSync(path.join('slots', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+    file = files[file];
+    const file_content = fs.readFileSync(path.join('slots', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
-    "slots": {
-      "PRODUCT": "NAME",
-      "CATEGORY": "CATEGORY",
-      "BRAND": "BRAND",
+        "slots": {
+            "PRODUCT": "NAME",
+            "CATEGORY": "CATEGORY",
+            "BRAND": "BRAND",
+        },
+        "utterances": [
+            "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+            "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+            "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+            "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+            "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+            "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+            "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+            "{verb} mir {PRODUCT|CATEGORY}",
+            "{verb} mir {BRAND} Produkte",
+            "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+        ],
     },
-    "utterances": [
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
-      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
-      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      "{verb} mir {PRODUCT|CATEGORY}",
-      "{verb} mir {BRAND} Produkte",
-      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
-    ],
-  },
-  async function(request, response) {
+    async function (request, response) {
 
+        let session = request.getSession();
         /*
-         {name, imageURL, url, description, brand}
-      */
-
-        let product={};
-        await api.getTopProduct().then( p =>{
+            {name, imageURL, url, description, brand}
+         */
+        let product = {};
+        await api.getTopProduct().then(p => {
             console.log(p);
-            product=p;
-        }).error(e =>{
+            product = p;
+        }).error(e => {
             console.log(e.error);
             return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
 
+        // Save that thing
 
+        session.set(product, JSON.stringify(product));
+
+        console.log("test response", product);
         //await search
         response.say("Ich habe " + product.name + " von " + product.brand + " gefunden");
         response.say("Willst du mehr Informationen zu dem Produkt?");
@@ -136,10 +140,10 @@ alexaApp.intent("AMAZON.StopIntent", function () {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
-    if (err) throw err;
-    console.log('Wrote schema.json');
-  });
+    fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
+        if (err) throw err;
+        console.log('Wrote schema.json');
+    });
 }
 
 app.listen(PORT);
