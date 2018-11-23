@@ -5,6 +5,8 @@ var express = require("express");
 var alexa = require("alexa-app");
 var Speech = require('ssml-builder');
 
+var api = require('lib/lib')
+
 var PORT = process.env.PORT || 8080;
 var app = express();
 
@@ -14,9 +16,9 @@ const debug = process.env.NODE_ENV !== 'production';
 const checkCerts = process.env.NODE_ENV === 'production';
 
 alexaApp.express({
-  expressApp: app,
-  checkCert: checkCerts,
-  debug: debug
+    expressApp: app,
+    checkCert: checkCerts,
+    debug: debug
 });
 
 // now POST calls to /test in express will be handled by the app.request() function
@@ -28,18 +30,18 @@ alexaApp.express({
 alexaApp.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
 
 alexaApp.pre = (req, resp, type) => {
-  console.log('Requesting ', req.type(), ' inside ', req.context, ' with the following data ', req.data)
+    console.log('Requesting ', req.type(), ' inside ', req.context, ' with the following data ', req.data)
 };
 
-alexaApp.launch(function(request, response) {
-  console.log('Launched!');
+alexaApp.launch(function (request, response) {
+    console.log('Launched!');
     let speech = new Speech()
         .say('Guten Abend!')
         .pause('100ms')
         .say('Wonach suchst du heute?');
 
-  response.say(speech.ssml(true));
-  response.shouldEndSession(false);
+    response.say(speech.ssml(true));
+    response.shouldEndSession(false);
 });
 
 var files = fs.readdirSync('dictionaries');
@@ -77,46 +79,51 @@ alexaApp.intent("SearchIntent", {
       "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
     ],
   },
-  function(request, response) {
+  async function(request, response) {
 
-    let test= {
-      name: "Kleid",
-      comp: "Apple"
-    };
-    //await search
-    response.say("Ich habe " + test.name + " von " + test.comp + " gefunden");
-    response.say("Willst du mehr Informationen zu dem Produkt?");
-    response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
-    // Save relevant infos in session
+        /*
+         {name, imageURL, url, description, brand}
+      */
+
+        let product = await api.getTopProduct();
+        //await search
+        response.say("Ich habe " + product.name + " von " + product.brand + " gefunden");
+        response.say("Willst du mehr Informationen zu dem Produkt?");
+        response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+        // Save relevant infos in session
 
 
-  }
+        response.card({
+            type: "Standard",
+            title: "Mac:Rush hat für dich gefunden!",
+            text: "Du hast grade ein " + product.name + " klicke auf den folgenden Link um es dir nochmal anzuschauen\n" + product.url,
+            image: { // image is optional
+                smallImageUrl: product.imageURL, // required
+            }
+        });
+
+
+    }
 );
 
 alexaApp.intent("FilterIntent", {
-        "slots": {
-            "PRODUCT": "NAME"
-        },
+        "slots": {},
         "utterances": [
-            "Zeig mir vorhandene Filter"
+            "Zeig mir verfügbare filter",
+            "Lass mich weitere Filter auswählen",
+            "Ich möchte Filtern"
         ]
     },
-    function(request, response) {
+    async function (request, response) {
 
-        let test= {
-            name: "Kleid",
-            comp: "Apple"
-        };
-        //await search
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
-
 
     }
 );
 
 
 alexaApp.intent("AMAZON.StopIntent", function () {
-  console.log('Stopped :(');
+    console.log('Stopped :(');
 });
 
 if (process.env.NODE_ENV !== 'production') {
