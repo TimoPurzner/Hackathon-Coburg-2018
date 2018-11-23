@@ -85,7 +85,16 @@ alexaApp.intent("SearchIntent", {
          {name, imageURL, url, description, brand}
       */
 
-        let product = await api.getTopProduct();
+        let product={};
+        await api.getTopProduct().then( p =>{
+            console.log(p);
+            product=p;
+        }).error(e =>{
+            console.log(e.error);
+            return response.clear().say("Ein Fehler, es tut mir leid :(").send();
+        });
+
+
         //await search
         response.say("Ich habe " + product.name + " von " + product.brand + " gefunden");
         response.say("Willst du mehr Informationen zu dem Produkt?");
