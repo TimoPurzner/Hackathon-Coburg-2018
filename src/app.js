@@ -84,7 +84,7 @@ alexaApp.intent("SearchIntent", {
             {name, imageURL, url, description, brand}
          */
         let product = {};
-        await api.getTopProduct().then(p => {
+        await api.getTopProduct('iPhones').then(p => {
             console.log(p);
             product = p;
         }).error(e => {
