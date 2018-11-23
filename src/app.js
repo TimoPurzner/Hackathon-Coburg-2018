@@ -7,11 +7,11 @@ var app = express();
 var alexaApp = new alexa.app("test");
 
 const debug = process.env.NODE_ENV !== 'production';
-const checkCerts = process.env.NODE_ENV === 'production';
+//const checkCerts = process.env.NODE_ENV === 'production';
 
 alexaApp.express({
   expressApp: app,
-  checkCert: checkCerts,
+  checkCert: false,
   debug: debug
 });
 
@@ -22,6 +22,7 @@ app.set("view engine", "pug");
 app.set('views', './src/views');
 
 alexaApp.launch(function(request, response) {
+  console.log('Launched!');
   response.say("You launched the app!");
 });
 
