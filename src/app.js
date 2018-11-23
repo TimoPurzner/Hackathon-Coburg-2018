@@ -26,7 +26,9 @@ alexaApp.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bou
 
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
+  
   response.say("You launched the app!");
+  response.shouldEndSession(false);
 });
 
 alexaApp.intent("SearchIntent", {
@@ -50,6 +52,7 @@ alexaApp.intent("SearchIntent", {
     console.log(request.slot('PRODUCT'));
 
     response.say("Hallo" + request.slot("PRODUCT") + "! Schön dich zu sehen");
+    response.shouldEndSession(false);
   }
 );
 
