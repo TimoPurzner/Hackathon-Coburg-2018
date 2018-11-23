@@ -22,7 +22,7 @@ alexaApp.express({
 // app.set("view engine", "pug");
 // app.set('views', './src/views');
 
-app.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
+alexaApp.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
 
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
