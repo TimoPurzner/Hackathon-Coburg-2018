@@ -46,18 +46,20 @@ alexaApp.launch(function (request, response) {
 
 var files = fs.readdirSync('dictionaries');
 for (var file in files) {
-    file = files[file];
-    const file_content = fs.readFileSync(path.join('dictionaries', file));
-    const file_name = path.basename(file, '.csv');
-    alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+  file = files[file];
+  if (file === '.gitkeep') continue;
+  const file_content = fs.readFileSync(path.join('dictionaries', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
 }
 
 files = fs.readdirSync('slots');
 for (var file in files) {
-    file = files[file];
-    const file_content = fs.readFileSync(path.join('slots', file));
-    const file_name = path.basename(file, '.csv');
-    alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+  file = files[file];
+  if (file === '.gitkeep') continue;
+  const file_content = fs.readFileSync(path.join('slots', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
