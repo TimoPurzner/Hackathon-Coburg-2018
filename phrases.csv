@@ -1,0 +1,10 @@
+﻿Ich {verb} {quantity} {size|colour|weight} {product|category}
+Ich {verb} {quantity} {brand} {size|colour|weight} {product|category}
+Wir {verb} (attribute} {size|colour|weight}  {product|category} von {brand}
+Ich {verb} {quantity} {size|colour|weight} {product|category} von {brand}
+Wir {verb} {attribute} {size|colour|weight} {product|category}
+{verb} mir {quantity} {size|colour|weight} {product} von {brand}
+{verb} uns {size|colour|weight} {brand} {product}
+{verb} mir {product|category}
+{verb} mir {brand} Produkte
+{verb} uns {quantity} {size|colour|weight} {brand} {product}
