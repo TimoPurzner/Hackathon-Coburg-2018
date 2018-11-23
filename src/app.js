@@ -1,6 +1,9 @@
+const path = require('path');
+const fs = require('fs');
+
 var express = require("express");
 var alexa = require("alexa-app");
-//var Speech = require('ssml-builder');
+var Speech = require('ssml-builder');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -30,37 +33,98 @@ alexaApp.pre = (req, resp, type) => {
 
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
+    let speech = new Speech()
+        .say('Guten Abend!')
+        .pause('100ms')
+        .say('Wonach suchst du heute?');
 
-  response.say("You launched the app!");
+  response.say(speech.ssml(true));
   response.shouldEndSession(false);
 });
 
+var files = fs.readdirSync('dictionaries');
+for (var file in files) {
+  file = files[file];
+  const file_content = fs.readFileSync(path.join('dictionaries', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+}
+
+files = fs.readdirSync('slots');
+for (var file in files) {
+  file = files[file];
+  const file_content = fs.readFileSync(path.join('slots', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+}
+
 alexaApp.intent("SearchIntent", {
     "slots": {
-      "PRODUCT": "NAME"
+      "PRODUCT": "NAME",
+      "CATEGORY": "CATEGORY",
+      "BRAND": "BRAND",
     },
     "utterances": [
-      "Ich suche ein {PRODUCT}",
-      "Ich möchte ein {PRODUCT} finden.",
-      "Gibt es ein {PRODUCT}"
-    ]
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+      "{verb} mir {PRODUCT|CATEGORY}",
+      "{verb} mir {BRAND} Produkte",
+      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+    ],
   },
   function(request, response) {
-    //response.say('Ich suche jetzt!').pause('1s');
-    // "https://www.baur.de/suche/serp/magellan?query=iphone&start=72&locale=de_DE&count=24&clientId=BaurDe&filterValues=filter_color%3Df72&order=price-asc"
-    // var element = johnslib.search({});
 
-    console.log(request.slot('PRODUCT'));
+    let test= {
+      name: "Kleid",
+      comp: "Apple"
+    };
+    //await search
+    response.say("Ich habe " + test.name + " von " + test.comp + " gefunden");
+    response.say("Willst du mehr Informationen zu dem Produkt?");
+    response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+    // Save relevant infos in session
 
-    response.say("Hallo " + request.slot("PRODUCT") + "! Schön dich zu sehen");
-    response.shouldEndSession(false);
+
   }
+);
+
+alexaApp.intent("FilterIntent", {
+        "slots": {
+            "PRODUCT": "NAME"
+        },
+        "utterances": [
+            "Zeig mir vorhandene Filter"
+        ]
+    },
+    function(request, response) {
+
+        let test= {
+            name: "Kleid",
+            comp: "Apple"
+        };
+        //await search
+        response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
+
+
+    }
 );
 
 
 alexaApp.intent("AMAZON.StopIntent", function () {
   console.log('Stopped :(');
 });
+
+if (process.env.NODE_ENV !== 'production') {
+  fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
+    if (err) throw err;
+    console.log('Wrote schema.json');
+  });
+}
 
 app.listen(PORT);
 console.log("Listening on port " + PORT);
