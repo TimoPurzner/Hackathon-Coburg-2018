@@ -5,7 +5,7 @@ var express = require("express");
 var alexa = require("alexa-app");
 var Speech = require('ssml-builder');
 
-var api = require('lib/lib')
+var api = require('lib/lib');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -27,7 +27,7 @@ alexaApp.express({
 // app.set("view engine", "pug");
 // app.set('views', './src/views');
 
-alexaApp.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
+alexaApp.messages.NO_INTENT_FOUND = "Ich weiß leider nicht was ich tun soll, versuch es doch noch einmal anders";
 
 alexaApp.pre = (req, resp, type) => {
     console.log('Requesting ', req.type(), ' inside ', req.context, ' with the following data ', req.data)
