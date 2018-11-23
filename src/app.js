@@ -8,11 +8,11 @@ var app = express();
 var alexaApp = new alexa.app("test");
 
 const debug = process.env.NODE_ENV !== 'production';
-//const checkCerts = process.env.NODE_ENV === 'production';
+const checkCerts = process.env.NODE_ENV === 'production';
 
 alexaApp.express({
   expressApp: app,
-  checkCert: false,
+  checkCert: checkCerts,
   debug: debug
 });
 
@@ -21,6 +21,8 @@ alexaApp.express({
 // from here on you can setup any other express routes or middlewares as normal
 // app.set("view engine", "pug");
 // app.set('views', './src/views');
+
+app.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
 
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
