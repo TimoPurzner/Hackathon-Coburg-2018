@@ -37,14 +37,16 @@ alexaApp.dictionary = {
 
 alexaApp.intent("nameIntent", {
     "slots": {
-      "NAME": "LITERAL"
+      "NAME": "NAME"
     },
     "utterances": [
-      "my {name is|name's} {names|NAME}", "set my name to {names|NAME}"
+        "Mein name ist {NAME}",
+        "Name {NAME}",
+        "hallo ich bin {NAME}"
     ]
   },
   function(request, response) {
-    response.say("Success!");
+    response.say("Hallo" + request.slot("NAME") + "! Schön dich zu sehen");
   }
 );
 
