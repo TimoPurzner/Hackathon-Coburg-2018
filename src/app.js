@@ -28,15 +28,20 @@ alexaApp.launch(function(request, response) {
 });
 
 alexaApp.intent("SearchIntent", {
+    "dialog": {
+      type: "delegate"
+    },
     "slots": {
       "PRODUCT": "NAME"
     },
     "utterances": [
-        "Ich suche {PRODUCT}",
+      "Ich suche ein {PRODUCT}",
+      "Ich möchte ein {PRODUCT} finden.",
+      "Gibt es ein {PRODUCT}"
     ]
   },
   function(request, response) {
-    response.say('Ich suche jetzt!').pause('1s');
+    //response.say('Ich suche jetzt!').pause('1s');
     // "https://www.baur.de/suche/serp/magellan?query=iphone&start=72&locale=de_DE&count=24&clientId=BaurDe&filterValues=filter_color%3Df72&order=price-asc"
     // var element = johnslib.search({});
 
