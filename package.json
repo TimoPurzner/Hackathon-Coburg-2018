@@ -1,0 +1,13 @@
+{
+  "name": "mac-rush-skill",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "git@github.com:ZeroSoulEater/Hackathon-Coburg-2018.git",
+  "author": "David <dev@dschwarz.codes>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "alexa-app": "^4.2.3",
+    "express": "^4.16.4"
+  }
+}
