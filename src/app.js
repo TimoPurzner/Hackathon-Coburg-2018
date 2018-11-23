@@ -23,9 +23,11 @@ alexaApp.express({
 
 alexaApp.messages.NO_INTENT_FOUND = "Ich weiß leider nicht was ich tun soll, versuch es doch noch einmal anders";
 
+/*
 alexaApp.pre = (req, resp, type) => {
     console.log('Requesting ', req.type(), ' inside ', req.context, ' with the following data ', req.data)
 };
+*/
 
 alexaApp.launch(function (request, response) {
     console.log('Launched!');
