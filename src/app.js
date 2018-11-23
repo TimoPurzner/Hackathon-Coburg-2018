@@ -7,17 +7,11 @@ var app = express();
 var alexaApp = new alexa.app("test");
 
 const debug = process.env.NODE_ENV !== 'production';
+const checkCerts = process.env.NODE_ENV === 'production';
 
 alexaApp.express({
   expressApp: app,
-
-  // verifies requests come from amazon alexa. Must be enabled for production.
-  // You can disable this if you're running a dev environment and want to POST
-  // things to test behavior. enabled by default.
-  checkCert: false,
-
-  // sets up a GET route when set to true. This is handy for testing in
-  // development, but not recommended for production. disabled by default
+  checkCert: checkCerts,
   debug: debug
 });
 
