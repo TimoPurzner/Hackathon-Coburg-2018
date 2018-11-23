@@ -5,7 +5,7 @@ var express = require("express");
 var alexa = require("alexa-app");
 var Speech = require('ssml-builder');
 
-var api = require('lib/lib');
+var api = require('./lib/lib');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -20,12 +20,6 @@ alexaApp.express({
     checkCert: checkCerts,
     debug: debug
 });
-
-// now POST calls to /test in express will be handled by the app.request() function
-
-// from here on you can setup any other express routes or middlewares as normal
-// app.set("view engine", "pug");
-// app.set('views', './src/views');
 
 alexaApp.messages.NO_INTENT_FOUND = "Ich weiß leider nicht was ich tun soll, versuch es doch noch einmal anders";
 
