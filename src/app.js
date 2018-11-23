@@ -57,26 +57,28 @@ for (var file in files) {
 }
 
 alexaApp.intent("SearchIntent", {
-        "slots": {
-            "PRODUCT": "NAME",
-            "CATEGORY": "CATEGORY",
-            "BRAND": "BRAND",
-        },
-        "utterances": [
-            "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-            "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-            "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
-            "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
-            "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-            "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
-            "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
-            "{verb} mir {PRODUCT|CATEGORY}",
-            "{verb} mir {BRAND} Produkte",
-            "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
-        ],
+    "slots": {
+      "PRODUCT": "AMAZON.SearchQuery",
+      "CATEGORY": "CATEGORY",
+      "BRAND": "BRAND",
     },
-    async function (request, response) {
-
+    "utterances": [
+      "Ich suche {PRODUCT}",
+/*
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+      "{verb} mir {PRODUCT|CATEGORY}",
+      "{verb} mir {BRAND} Produkte",
+      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+      */
+    ],
+  },
+  async function(request, response) {
         let session = request.getSession();
         /*
             {name, imageURL, url, description, brand}
