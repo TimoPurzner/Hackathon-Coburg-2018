@@ -24,17 +24,18 @@ alexaApp.express({
 
 alexaApp.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
 
+alexaApp.pre = (req, resp, type) => {
+  console.log(`Requesting ${req.type} inside ${req.context} with the following data ${req.data}`)
+};
+
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
-  
+
   response.say("You launched the app!");
   response.shouldEndSession(false);
 });
 
 alexaApp.intent("SearchIntent", {
-    "dialog": {
-      type: "delegate"
-    },
     "slots": {
       "PRODUCT": "NAME"
     },
