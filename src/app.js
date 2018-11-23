@@ -1,6 +1,6 @@
 var express = require("express");
 var alexa = require("alexa-app");
-//var Speech = require('ssml-builder');
+var Speech = require('ssml-builder');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -30,8 +30,12 @@ alexaApp.pre = (req, resp, type) => {
 
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
+    let speech = new Speech()
+        .say('Guten Abend!')
+        .pause('100ms')
+        .say('Wonach suchst du heute?');
 
-  response.say("You launched the app!");
+  response.say(speech.ssml(true));
   response.shouldEndSession(false);
 });
 
