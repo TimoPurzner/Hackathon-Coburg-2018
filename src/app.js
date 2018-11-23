@@ -19,32 +19,32 @@ alexaApp.express({
 // now POST calls to /test in express will be handled by the app.request() function
 
 // from here on you can setup any other express routes or middlewares as normal
-app.set("view engine", "pug");
-app.set('views', './src/views');
+// app.set("view engine", "pug");
+// app.set('views', './src/views');
 
 alexaApp.launch(function(request, response) {
   console.log('Launched!');
   response.say("You launched the app!");
 });
 
-alexaApp.dictionary = {
-  "names": ["matt", "joe", "bob", "bill", "mary", "jane", "dawn"]
-};
-
-alexaApp.intent("nameIntent", {
+alexaApp.intent("SearchIntent", {
     "slots": {
-      "NAME": "NAME"
+      "PRODUCT": "NAME"
     },
     "utterances": [
-        "Mein name ist {NAME}",
-        "Name {NAME}",
-        "hallo ich bin {NAME}"
+        "Ich suche {PRODUCT}",
     ]
   },
   function(request, response) {
-    response.say("Hallo" + request.slot("NAME")).pause('1s').say( "Schön dich zu sehen");
+    response.say('Ich suche jetzt!').pause('1s');
+    // "https://www.baur.de/suche/serp/magellan?query=iphone&start=72&locale=de_DE&count=24&clientId=BaurDe&filterValues=filter_color%3Df72&order=price-asc"
+    // var element = johnslib.search({});
+
+    console.log(request.slot('PRODUCT'));
+
+    response.say("Hallo" + request.slot("PRODUCT") + "! Schön dich zu sehen");
   }
 );
 
 app.listen(PORT);
-console.log("Listening on port " + PORT + ", try http://localhost:" + PORT + "/test");
+console.log("Listening on port " + PORT);
