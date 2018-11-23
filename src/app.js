@@ -25,7 +25,7 @@ alexaApp.express({
 alexaApp.messages.NO_INTENT_FOUND = "Why you called dat intent? I don't know bout dat";
 
 alexaApp.pre = (req, resp, type) => {
-  console.log(`Requesting ${req.type} inside ${req.context} with the following data ${req.data}`)
+  console.log('Requesting ', req.type(), ' inside ', req.context, ' with the following data ', req.data)
 };
 
 alexaApp.launch(function(request, response) {
