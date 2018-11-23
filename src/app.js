@@ -89,7 +89,7 @@ alexaApp.intent("SearchIntent", {
         await api.getTopProduct('iPhones').then(p => {
             console.log(p);
             product = p;
-        }).error(e => {
+        }).catch(e => {
             console.log(e.error);
             return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
