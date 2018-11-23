@@ -7,17 +7,11 @@ var app = express();
 var alexaApp = new alexa.app("test");
 
 const debug = process.env.NODE_ENV !== 'production';
+//const checkCerts = process.env.NODE_ENV === 'production';
 
 alexaApp.express({
   expressApp: app,
-
-  // verifies requests come from amazon alexa. Must be enabled for production.
-  // You can disable this if you're running a dev environment and want to POST
-  // things to test behavior. enabled by default.
   checkCert: false,
-
-  // sets up a GET route when set to true. This is handy for testing in
-  // development, but not recommended for production. disabled by default
   debug: debug
 });
 
@@ -28,6 +22,7 @@ app.set("view engine", "pug");
 app.set('views', './src/views');
 
 alexaApp.launch(function(request, response) {
+  console.log('Launched!');
   response.say("You launched the app!");
 });
 
@@ -37,14 +32,16 @@ alexaApp.dictionary = {
 
 alexaApp.intent("nameIntent", {
     "slots": {
-      "NAME": "LITERAL"
+      "NAME": "NAME"
     },
     "utterances": [
-      "my {name is|name's} {names|NAME}", "set my name to {names|NAME}"
+        "Mein name ist {NAME}",
+        "Name {NAME}",
+        "hallo ich bin {NAME}"
     ]
   },
   function(request, response) {
-    response.say("Success!");
+    response.say("Hallo" + request.slot("NAME") + "! Schön dich zu sehen");
   }
 );
 
