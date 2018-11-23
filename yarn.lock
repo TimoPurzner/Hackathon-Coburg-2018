@@ -748,6 +748,11 @@ source-map@~0.6.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
+ssml-builder@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/ssml-builder/-/ssml-builder-0.4.3.tgz#40c5f71a541588ecdc1ae9987c48eb12122cc63d"
+  integrity sha1-QMX3GlQViOzcGumYfEjrEhIsxj0=
+
 "statuses@>= 1.4.0 < 2":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
