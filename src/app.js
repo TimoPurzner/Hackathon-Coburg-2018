@@ -1,5 +1,6 @@
 var express = require("express");
 var alexa = require("alexa-app");
+var Speech = require('ssml-builder');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -41,7 +42,7 @@ alexaApp.intent("nameIntent", {
     ]
   },
   function(request, response) {
-    response.say("Hallo" + request.slot("NAME") + "! Schön dich zu sehen");
+    response.say("Hallo" + request.slot("NAME")).pause('1s').say( "Schön dich zu sehen");
   }
 );
 
