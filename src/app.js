@@ -171,7 +171,7 @@ alexaApp.intent("SelectFilterIntent", {
         let session = request.getSession();
 
         response.shouldEndSession(false);
-        console.log("SELECT FILTER INTENT", request.slot("FILTER_NAME").value);
+        console.log("SELECT FILTER INTENT", request.slots("FILTER_NAME").value);
         response.say(request.slot("FILTER_NAME").value);
 
     }
