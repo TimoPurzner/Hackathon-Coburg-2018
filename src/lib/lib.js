@@ -85,7 +85,7 @@ function getTopProduct (query) {
                         let info = response.body.searchresult.result.styles[0];
 
                         productInformation = {
-                            name: info.nameNoBrand,
+                            name: info.name,
                             imageURL: getProductImageURL(info.images),
                             url: getProductURL(info.masterSku, info.sku),
                             description: info.description.replace(/<[^>]+>/g, ' '),

@@ -5,7 +5,7 @@ var express = require("express");
 var alexa = require("alexa-app");
 var Speech = require('ssml-builder');
 
-var api = require('lib/lib');
+var api = require('./lib/lib');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -21,17 +21,13 @@ alexaApp.express({
     debug: debug
 });
 
-// now POST calls to /test in express will be handled by the app.request() function
-
-// from here on you can setup any other express routes or middlewares as normal
-// app.set("view engine", "pug");
-// app.set('views', './src/views');
-
 alexaApp.messages.NO_INTENT_FOUND = "Ich weiß leider nicht was ich tun soll, versuch es doch noch einmal anders";
 
+/*
 alexaApp.pre = (req, resp, type) => {
     console.log('Requesting ', req.type(), ' inside ', req.context, ' with the following data ', req.data)
 };
+*/
 
 alexaApp.launch(function (request, response) {
     console.log('Launched!');
@@ -46,50 +42,54 @@ alexaApp.launch(function (request, response) {
 
 var files = fs.readdirSync('dictionaries');
 for (var file in files) {
-    file = files[file];
-    const file_content = fs.readFileSync(path.join('dictionaries', file));
-    const file_name = path.basename(file, '.csv');
-    alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+  file = files[file];
+  if (file === '.gitkeep') continue;
+  const file_content = fs.readFileSync(path.join('dictionaries', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
 }
 
 files = fs.readdirSync('slots');
 for (var file in files) {
-    file = files[file];
-    const file_content = fs.readFileSync(path.join('slots', file));
-    const file_name = path.basename(file, '.csv');
-    alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+  file = files[file];
+  if (file === '.gitkeep') continue;
+  const file_content = fs.readFileSync(path.join('slots', file));
+  const file_name = path.basename(file, '.csv');
+  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
-        "slots": {
-            "PRODUCT": "NAME",
-            "CATEGORY": "CATEGORY",
-            "BRAND": "BRAND",
-        },
-        "utterances": [
-            "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-            "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-            "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
-            "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
-            "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-            "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
-            "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
-            "{verb} mir {PRODUCT|CATEGORY}",
-            "{verb} mir {BRAND} Produkte",
-            "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
-        ],
+    "slots": {
+      "PRODUCT": "AMAZON.SearchQuery",
+      "CATEGORY": "CATEGORY",
+      "BRAND": "BRAND",
     },
-    async function (request, response) {
-
+    "utterances": [
+      "Ich suche {PRODUCT}",
+/*
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+      "{verb} mir {PRODUCT|CATEGORY}",
+      "{verb} mir {BRAND} Produkte",
+      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+      */
+    ],
+  },
+  async function(request, response) {
         let session = request.getSession();
         /*
             {name, imageURL, url, description, brand}
          */
         let product = {};
-        await api.getTopProduct().then(p => {
+        await api.getTopProduct('iPhones').then(p => {
             console.log(p);
             product = p;
-        }).error(e => {
+        }).catch(e => {
             console.log(e.error);
             return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
