@@ -159,6 +159,39 @@ alexaApp.intent("FilterIntent", {
     }
 );
 
+
+alexaApp.intent("SelectFilterIntent", {
+        "slots": {"FILTER_NAME": "FILTER_NAME"},
+        "utterances": [
+            "{}"
+        ]
+    },
+    async function (request, response) {
+        let session = request.getSession();
+
+        response.shouldEndSession(false);
+        console.log("SELECT FILTER INTENT", request.slots["FILTER_NAME"].value);
+        response.say(request.slots["FILTER_NAME"].value);
+
+    }
+);
+
+
+alexaApp.intent("SetFilterIntent", {
+        "slots": {"VALUE": "VALUE"},
+        "utterances": [
+            "{}"
+        ]
+    },
+    async function (request, response) {
+        let session = request.getSession();
+        response.shouldEndSession(false);
+        console.log("SELECT FILTER INTENT", request.slots["VALUE"].value);
+        response.say("set filter intent"+request.slots["VALUE"].value);
+
+    }
+);
+
 alexaApp.intent("DetailIntent", {
         "slots": {},
         "utterances": [
@@ -206,7 +239,7 @@ alexaApp.intent("AMAZON.YesIntent", {
                 smallImageUrl: product.imageURL, // required
             }
         });
-        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
+        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, bis zum nächsten mal");
     }
 );
 
