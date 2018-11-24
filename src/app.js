@@ -160,6 +160,23 @@ alexaApp.intent("FilterIntent", {
     }
 );
 
+
+alexaApp.intent("SelectFilterIntent", {
+        "slots": {"Filter": "FILTER"},
+        "utterances": [
+            "{}"
+        ]
+    },
+    async function (request, response) {
+        let session = request.getSession();
+
+        response.shouldEndSession(false);
+        console.log("SELECT FILTER INTENT", request.slot("FILTER").value);
+        response.say(request.slot("FILTER").value);
+
+    }
+);
+
 alexaApp.intent("DetailIntent", {
         "slots": {},
         "utterances": [
@@ -202,8 +219,7 @@ alexaApp.intent("AMAZON.YesIntent", {
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            //text: `Du hast grade ein ${product.name} von ${product.brand} gefunden klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
-            text: "test täscht täääscht",
+            text: `Du hast grade ein ${product.name} von ${product.brand} gefunden klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
