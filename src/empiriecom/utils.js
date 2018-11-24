@@ -40,15 +40,16 @@ function getProductURL (masterSku, sku) {
 }
 
 /**
- * function to map a filter_key (e.g. "Farbe") and its value to a filter key and its code
- * @param filterKey
+ * function to map a filter name (e.g. "Farbe") and its value to a filter key and its code
+ * @param filterName
  * @param filterValue
  * @returns {Promise<any>}
  */
-function mapFilterToCode (filterKey, filterValue) {
+function mapFilterToCode (filterName, filterValue) {
 
     let stream = fs.createReadStream('src/empiriecom/filter-mapping.csv');
     let filterObject = {};
+    let filterArray = [];
 
     return new Promise(
         function (resolve, reject) {
@@ -61,28 +62,56 @@ function mapFilterToCode (filterKey, filterValue) {
                         rowData[current_key] = data[current_key]
                     });
 
-                    if(rowData.filterValue === filterValue && rowData.filterKey === filterKey) {
+                    if(rowData.filterValue === filterValue && rowData.filterName === filterName) {
 
                         filterObject = {
                             filterKey: rowData.filterKey,
                             filterCode: rowData.filterCode
                         };
+                        filterArray.push(filterObject)
                     }
 
                 }).on('end', () => {
-                if(filterObject.filterKey != undefined) {
-                    resolve(filterObject);
+                if(filterArray != undefined && filterArray.length != 0) {
+                    resolve(filterArray);
                 }
                 else {
-                    reject({error: 'could not retrieve top product'});
+                    reject({error: 'could not retrieve filter'});
                 }
             });
         });
 
 }
 
-function buildQueryObject (queryString, ) {
+/**
+ * function to build filter object
+ * @param filterArray
+ * @returns {Promise<any>}
+ */
+function buildFilterObject (filterArray) {
+    let filters = {};
 
+    return new Promise(
+        function (resolve, reject) {
+            for (let i in filterArray) {
+                const keyName = Object.keys(filterArray[i]);
+                if (filters.hasOwnProperty(keyName[0])) {
+                    const tmp = filterArray[i];
+                    filters[keyName].push(tmp[keyName]);
+                } else {
+                    const tmp = filterArray[i];
+                    let tmpArr = [];
+                    tmpArr.push(tmp[keyName]);
+                    filters[keyName] = tmpArr;
+
+                }
+            }
+
+            if (filters != undefined)
+                resolve(filters);
+            else
+                reject({error: 'could not build filter object'});
+        });
 }
 
 module.exports = {
@@ -90,5 +119,6 @@ module.exports = {
     getProductImageURL: getProductImageURL,
     getProductURL: getProductURL,
     mapFilterToCode: mapFilterToCode,
+    buildFilterObject: buildFilterObject,
     searchBaseURL: searchBaseURL
 };

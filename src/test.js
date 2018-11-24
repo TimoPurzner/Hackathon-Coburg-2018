@@ -7,7 +7,7 @@ api.getTopProduct({query: "iphone", filters: { }}).then(bla => {
 });
 
 
-utils.mapFilterToCode('filter_color', 'cognac')
+utils.mapFilterToCode('Farbe', 'schwarz')
     .then(p => console.log(p))
     .catch(e => console.log(e.error));
 
@@ -20,4 +20,8 @@ api.getFilters('iphone x').then(bla => {
 api.getFilterOptions('iphone x', 's_filter_Availability').then(bla => {
     console.log(bla);
 });
+
+utils.buildFilterObject([{filter_color: 'f1234'}, {filter_color: 'f345'}, {filter_size: 'f38'}])
+    .then(p => console.log(p))
+    .catch(e => console.log(e.error));;
 

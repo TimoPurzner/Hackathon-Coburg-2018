@@ -137,7 +137,6 @@ alexaApp.intent("FilterIntent", {
         let filters = {};
         let filterString = '';
         response.shouldEndSession(false);
-        //TODO: get Filter möglichkeiten
         await api.getFilters(session.get("query")).then(f => {
             filters = f;
         }).catch(e => {
@@ -150,11 +149,11 @@ alexaApp.intent("FilterIntent", {
                 if(filterString === '')
                     filterString += filters[key];
                 else
-                    filterString += ', ' + filters[key];
+                    filterString += '. ' + filters[key];
             }
         }
 
-        response.say("Für dein Produkt gibt es folgende Filter wähl einfach einen davon aus." + filterString);
+        response.say("Für dein Produkt gibt es folgende Filter wähl einfach einen davon aus" + filterString);
         response.shouldEndSession(false);
 
     }
