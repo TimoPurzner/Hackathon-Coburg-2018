@@ -164,7 +164,7 @@ alexaApp.intent("DetailIntent", {
             return response.say("Du musst dir erst ein Produkt aussuchen um Details dazu zu sehen. Sag zum Beispiel. Ich suche ein Kleid").send()
         }
 
-        let product = session.get("product");
+        let product = JSON.parse(session.get("product"));
         response.say(`Ich lese dir eine kurze beschreibung zu deinem Produkt ${product.name} vor`);
         response.say(`${product.description}`);
         session.set("status", "detail");
