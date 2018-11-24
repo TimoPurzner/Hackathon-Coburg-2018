@@ -194,7 +194,7 @@ alexaApp.intent("SelectFilterIntent", {
 
         session.set("filter_name", request.slots["FILTER_NAME"].value);
 
-        response.say("Für deinen Filter gibt es folgende Filteroptionen. Wähle bitte deine, oder mehrere davon aus. " + filterOptionString);
+        response.say("Für deinen Filter gibt es folgende Filteroptionen. Wähle bitte eine, oder mehrere davon aus. " + filterOptionString);
         //response.say(request.slots["FILTER_NAME"].value);
 
     }
