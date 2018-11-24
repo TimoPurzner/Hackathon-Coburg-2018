@@ -173,16 +173,23 @@ alexaApp.intent("SelectFilterIntent", {
         let filterOptions = {};
         let filterOptionString = '';
 
+        let filter_name = request.slots["FILTER_NAME"].value === 'farbe' ? 'filter_color' : request.slots["FILTER_NAME"].value
+
         response.shouldEndSession(false);
-        await api.getFilterOptions(session.get("query"), request.slots["FILTER_NAME"].value).then(fo => {
+        console.log('FN:', filter_name);
+        await api.getFilterOptions(session.get("query"), filter_name).then((fo) => {
+            console.log('FO:', fo);
             filterOptions = fo;
         }).catch(e => {
             console.log(e.error);
             return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
 
+        console.log(filterOptions);
         for (let key in filterOptions) {
+          console.log(key);
             if (filterOptions.hasOwnProperty(key)) {
+                console.log(filterOptionString);
                 if(filterOptionString === '')
                     filterOptionString += filterOptions[key];
                 else
@@ -192,9 +199,8 @@ alexaApp.intent("SelectFilterIntent", {
 
 
         console.log("SELECT FILTER INTENT", request.slots["FILTER_NAME"].value);
-
+        console.log("FILTER OPTION", filterOptionString);
         session.set("filter_name", request.slots["FILTER_NAME"].value);
-
         response.say("Für deinen Filter gibt es folgende Filteroptionen, wähle bitte einen aus. " + filterOptionString);
 
     }
