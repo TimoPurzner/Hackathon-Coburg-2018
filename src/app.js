@@ -182,7 +182,7 @@ alexaApp.intent("AMAZON.YesIntent", {
         }
 
         let product = JSON.parse(session.get("product"));
-
+        console.log("FUCKING SHIT CARD", product);
         response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
         response.card({
             type: "Standard",
