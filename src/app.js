@@ -94,11 +94,12 @@ alexaApp.intent("SearchIntent", {
 
         let filter = {};
 
+        /*
         if (request.slots["COLOUR"]) {
             //TODO: get filter id fpr color
             filter = {filters: {filter_color: ['f135']}}
         }
-
+        */
         await api.getTopProduct({query: request.slots["PRODUCT"].value, filters: filter}).then(p => {
             console.log(p);
             product = p;
@@ -134,7 +135,9 @@ alexaApp.intent("FilterIntent", {
         let session = request.getSession();
         response.shouldEndSession(false);
         //TODO: get Filter möglichkeiten
-        let filters = api.getFilters("iPhone");
+        await api.getFilters("iPhone").then(f =>{
+
+        });
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus." + filters.toString());
         response.shouldEndSession(false);
 
