@@ -112,7 +112,7 @@ alexaApp.intent("SearchIntent", {
         //await search
         response.say("Ich habe " + product.name + " von " + product.brand + " gefunden es kostet " + product.price);
         response.say("Willst du mehr Informationen zu dem Produkt?");
-        response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+        response.say("Ich kann auch weitere Artikel suchen oder du kannst die Suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
 
         // Save relevant infos in session
         session.set("product", JSON.stringify(product));
@@ -134,12 +134,27 @@ alexaApp.intent("FilterIntent", {
     },
     async function (request, response) {
         let session = request.getSession();
+        let filters = {};
+        let filterString = '';
         response.shouldEndSession(false);
         //TODO: get Filter möglichkeiten
-        await api.getFilters(session.get("query")).then(f =>{
-
+        await api.getFilters(session.get("query")).then(f => {
+            filters = f;
+        }).catch(e => {
+            console.log(e.error);
+            return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
-        response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus." + filters.toString());
+
+        for (let key in filters) {
+            if (filters.hasOwnProperty(key)) {
+                if(filterString === '')
+                    filterString += filters[key];
+                else
+                    filterString += ', ' + filters[key];
+            }
+        }
+
+        response.say("Für dein Produkt gibt es folgende Filter wähl einfach einen davon aus." + filterString);
         response.shouldEndSession(false);
 
     }

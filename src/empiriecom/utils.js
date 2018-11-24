@@ -40,12 +40,12 @@ function getProductURL (masterSku, sku) {
 }
 
 /**
- * function to map a filter name (e.g. "Farbe") and its value to a filter key and its code
- * @param filterName
+ * function to map a filter_key (e.g. "Farbe") and its value to a filter key and its code
+ * @param filterKey
  * @param filterValue
  * @returns {Promise<any>}
  */
-function mapFilterToCode (filterName, filterValue) {
+function mapFilterToCode (filterKey, filterValue) {
 
     let stream = fs.createReadStream('src/empiriecom/filter-mapping.csv');
     let filterObject = {};
@@ -61,7 +61,7 @@ function mapFilterToCode (filterName, filterValue) {
                         rowData[current_key] = data[current_key]
                     });
 
-                    if(rowData.filterValue === filterValue && rowData.filterName === filterName) {
+                    if(rowData.filterValue === filterValue && rowData.filterKey === filterKey) {
 
                         filterObject = {
                             filterKey: rowData.filterKey,
@@ -78,6 +78,10 @@ function mapFilterToCode (filterName, filterValue) {
                 }
             });
         });
+
+}
+
+function buildQueryObject (queryString, ) {
 
 }
 

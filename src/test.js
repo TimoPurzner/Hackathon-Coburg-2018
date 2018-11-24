@@ -7,17 +7,17 @@ api.getTopProduct({query: "iphone", filters: { }}).then(bla => {
 });
 
 
-utils.mapFilterToCode('Farbe', 'cognac')
+utils.mapFilterToCode('filter_color', 'cognac')
     .then(p => console.log(p))
     .catch(e => console.log(e.error));
 
 //console.log(filterObject);
 
-customlib.getFilters('iphone x').then(bla => {
+api.getFilters('iphone x').then(bla => {
     console.log(bla);
 });
 
-customlib.getFilterOptions('iphone x', 's_filter_Availability').then(bla => {
+api.getFilterOptions('iphone x', 's_filter_Availability').then(bla => {
     console.log(bla);
 });
 
