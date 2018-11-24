@@ -162,7 +162,7 @@ alexaApp.intent("FilterIntent", {
 
 
 alexaApp.intent("SelectFilterIntent", {
-        "slots": {"Filter": "FILTER"},
+        "slots": {"FILTER_NAME": "FILTER_NAME"},
         "utterances": [
             "{}"
         ]
@@ -171,8 +171,8 @@ alexaApp.intent("SelectFilterIntent", {
         let session = request.getSession();
 
         response.shouldEndSession(false);
-        console.log("SELECT FILTER INTENT", request.slot("FILTER").value);
-        response.say(request.slot("FILTER").value);
+        console.log("SELECT FILTER INTENT", request.slot("FILTER_NAME").value);
+        response.say(request.slot("FILTER_NAME").value);
 
     }
 );
