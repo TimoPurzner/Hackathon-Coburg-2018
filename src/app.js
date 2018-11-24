@@ -161,14 +161,6 @@ alexaApp.intent("DetailIntent", {
         response.say(`${product.description}`);
         response.say("Möchtest du dir dieses Produkt Merken?");
         session.set("status", "detail");
-        response.card({
-            type: "Standard",
-            title: "Mac:Rush hat für dich gefunden!",
-            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
-            image: { // image is optional
-                smallImageUrl: product.imageURL, // required
-            }
-        });
 
     }
 );
@@ -188,14 +180,14 @@ alexaApp.intent("AMAZON.YesIntent", {
         let product = JSON.parse(session.get("product"));
 
         response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
-       /* response.card({
+        response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
             text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
-        }); */
+        });
     }
 );
 
