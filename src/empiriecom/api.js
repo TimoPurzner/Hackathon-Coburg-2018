@@ -1,5 +1,8 @@
 let request = require('request');
 
+const productBaseURL = 'https://www.baur.de/p/';
+const imageBaseURL = 'https://media.baur.de/i/empiriecom/';
+const searchBaseURL = 'https://www.baur.de/suche/serp/magellan';
 
 /**
  * Returns a URL for queryParams to share or save the query
@@ -29,7 +32,7 @@ function getFilterOptions (query) {
  *
  */
 function getProductImageURL (imageId) {
-    return 'https://media.baur.de/i/empiriecom/' + imageId;
+    return imageBaseURL + imageId;
 }
 
 /**
@@ -40,7 +43,7 @@ function getProductImageURL (imageId) {
  *
  */
 function getProductURL (masterSku, sku) {
-    return 'https://www.baur.de/p/' + masterSku + '#sku=' + sku;
+    return productBaseURL + masterSku + '#sku=' + sku;
 }
 
 /**
@@ -63,7 +66,7 @@ function getTopProduct (query) {
             request(
                 {
                     method: 'POST',
-                    uri: 'https://www.baur.de/suche/serp/magellan',
+                    uri: searchBaseURL,
                     json: true,
                     headers: {
                         'Content-Type': 'application/json',

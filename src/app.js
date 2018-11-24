@@ -5,7 +5,7 @@ var express = require("express");
 var alexa = require("alexa-app");
 var Speech = require('ssml-builder');
 
-var api = require('./empiriecom/lib');
+var api = require('./empiriecom/api');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
