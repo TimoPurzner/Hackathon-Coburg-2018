@@ -202,7 +202,7 @@ alexaApp.intent("SelectFilterIntent", {
         console.log("SELECT FILTER INTENT", request.slots["FILTER_NAME"].value);
         console.log("FILTER OPTION", filterOptionString);
         session.set("filter_name", request.slots["FILTER_NAME"].value);
-        response.say("Für deinen Filter gibt es folgende Filteroptionen, wähle bitte einen aus. " + filterOptionString);
+        response.say("Für deinen Filter gibt es folgende optionen, wähle bitte eine aus. " + filterOptionString);
 
     }
 );
