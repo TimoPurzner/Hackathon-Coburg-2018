@@ -214,6 +214,7 @@ alexaApp.intent("AMAZON.HelpIntent", {
 
         switch (status) {
             case "search":
+                let product = JSON.parse(session.get("product"));
                 response.say("Ich habe gerade" + product.name + " von " + product.brand + " für dich gefunden gefunden");
                 response.say("Du kannst entweder mehr Informationen zu dem Produkt haben oder");
                 response.say("Ich kann auch ähnlichen Artikel geben oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
