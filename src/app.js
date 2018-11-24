@@ -207,7 +207,7 @@ alexaApp.intent("AMAZON.YesIntent", {
                 smallImageUrl: product.imageURL, // required
             }
         });
-        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
+        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, bis zum nächsten mal");
     }
 );
 
