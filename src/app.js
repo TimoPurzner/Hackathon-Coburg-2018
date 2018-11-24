@@ -181,8 +181,11 @@ alexaApp.intent("SelectFilterIntent", {
             return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
 
+        console.log(filterOptions);
         for (let key in filterOptions) {
+          console.log(key);
             if (filterOptions.hasOwnProperty(key)) {
+                console.log(filterOptionString);
                 if(filterOptionString === '')
                     filterOptionString += filterOptions[key];
                 else
