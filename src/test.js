@@ -17,7 +17,7 @@ api.getFilters('iphone x').then(bla => {
     console.log(bla);
 });
 
-api.getFilterOptions('iphone x', 's_filter_Availability').then(bla => {
+api.getFilterOptions('iphone x', 'farbe').then(bla => {
     console.log(bla);
 });
 

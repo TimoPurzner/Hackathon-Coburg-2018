@@ -99,7 +99,7 @@ function getFilterOptions (query, option) {
                     if(response.statusCode === 200){
                         var data = response.body.searchresult.result.filters;
                         for (var i = 0; i < data.length; i++) {
-                            if (data[i].displayName == option) {
+                            if (data[i].displayName.toUpperCase() == option.toUpperCase()) {
                                 for (var index = 0; index < 3; index++) {
                                     filterOptions[data[i].values[index].valueId] = data[i].values[index].valueDisplayName;        
                                 }
