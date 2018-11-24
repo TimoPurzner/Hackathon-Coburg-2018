@@ -94,8 +94,6 @@ alexaApp.intent("SearchIntent", {
 
         let filter = {};
 
-        console.log('DER KUNDE WIIIIIIL DAS FOLGENDE PRODUKTT!!!!!',request.slots["PRODUCT"].value);
-
         if (request.slots["COLOUR"]) {
             //TODO: get filter id fpr color
             filter = {filters: {filter_color: ['f135']}}
@@ -111,7 +109,7 @@ alexaApp.intent("SearchIntent", {
 
         console.log("test response", product);
         //await search
-        response.say("Ich habe " + product.name + " von " + product.brand + " gefunden");
+        response.say("Ich habe " + product.name + " von " + product.brand + " gefunden es kostet " + product.price);
         response.say("Willst du mehr Informationen zu dem Produkt?");
         response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
 
@@ -171,16 +169,15 @@ alexaApp.intent("AMAZON.YesIntent", {
         "slots": {},
         "utterances": []
     }, function (request, response) {
-        response.shouldEndSession(false);
+        response.shouldEndSession(true);
         let session = request.getSession();
         let product = JSON.parse(session.get("product"));
-        //if (session.get("status") !== "d")
 
         response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url}`,
+            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
@@ -192,8 +189,8 @@ alexaApp.intent("AMAZON.NoIntent", {
         "slots": {},
         "utterances": []
     }, function (request, response) {
-
-        response.say("Ok, was kann ich sonst für dich tun?");
+        response.shouldEndSession(true);
+        response.say("Ok, dann bis später, ich freue mich auf dich!");
     }
 );
 
