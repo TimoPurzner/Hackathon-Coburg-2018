@@ -44,51 +44,62 @@ alexaApp.launch(function (request, response) {
 
 var files = fs.readdirSync('dictionaries');
 for (var file in files) {
-  file = files[file];
-  if (file === '.gitkeep') continue;
-  const file_content = fs.readFileSync(path.join('dictionaries', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+    file = files[file];
+    if (file === '.gitkeep') continue;
+    const file_content = fs.readFileSync(path.join('dictionaries', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
 }
 
 files = fs.readdirSync('slots');
 for (var file in files) {
-  file = files[file];
-  if (file === '.gitkeep') continue;
-  const file_content = fs.readFileSync(path.join('slots', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+    file = files[file];
+    if (file === '.gitkeep') continue;
+    const file_content = fs.readFileSync(path.join('slots', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
-    "slots": {
-      "PRODUCT": "AMAZON.SearchQuery",
-      "CATEGORY": "CATEGORY",
-      "BRAND": "BRAND",
+        "slots": {
+            "PRODUCT": "AMAZON.SearchQuery",
+            "CATEGORY": "CATEGORY",
+            "BRAND": "BRAND",
+            "COLOUR": "COLOUR",
+        },
+        "utterances": [
+            "Ich suche {PRODUCT}",
+            "Ich suche ein {PRODUCT}",
+            "kannst du mir {PRODUCT} zeigen"
+            /*
+                  "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+                  "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+                  "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+                  "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+                  "{verb} mir {PRODUCT|CATEGORY}",
+                  "{verb} mir {BRAND} Produkte",
+                  "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+                  */
+        ],
     },
-    "utterances": [
-      "Ich suche {PRODUCT}",
-/*
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
-      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
-      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      "{verb} mir {PRODUCT|CATEGORY}",
-      "{verb} mir {BRAND} Produkte",
-      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      */
-    ],
-  },
-  async function(request, response) {
+    async function (request, response) {
         let session = request.getSession();
         /*
             {name, imageURL, url, description, brand}
          */
         let product = {};
-        await api.getTopProduct('iPhones').then(p => {
+
+        let filter = {};
+
+        if (request.slots["COLOUR"]) {
+            //TODO: get filter id fpr color
+            filter = {filters: {filter_color: ['f135']}}
+        }
+
+        await api.getTopProduct({query: 'iPhones', filters: filter}).then(p => {
             console.log(p);
             product = p;
         }).catch(e => {
@@ -107,7 +118,7 @@ alexaApp.intent("SearchIntent", {
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            text: `Du hast grade ein <i> ${product.name} </i> gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n <a href='${product.url}'> ${product.url}</a>`,
+            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
@@ -115,6 +126,8 @@ alexaApp.intent("SearchIntent", {
 
         session.set("product", JSON.stringify(product));
         session.set("status", "search");
+
+        response.shouldEndSession(false);
 
     }
 );
@@ -129,46 +142,106 @@ alexaApp.intent("FilterIntent", {
     },
     async function (request, response) {
         let session = request.getSession();
+        //TODO: get Filter möglichkeiten
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
+        response.shouldEndSession(false);
 
     }
 );
 
+alexaApp.intent("DetailIntent", {
+        "slots": {},
+        "utterances": [
+            "Zeig mir mehr Infos",
+            "Zeig mir mehr Informationen"
+        ]
+    },
+    async function (request, response) {
+        response.shouldEndSession(false);
+        let session = request.getSession();
 
-alexaApp.intent("AMAZON.StopIntent", function () {
-    console.log('Stopped :(');
-});
+        if (session.get("status") !== "search" | session.get("product") === undefined) {
+            return response.say("Du musst dir erst ein Produkt aussuchen um Details dazu zu sehen. Sag zum Beispiel. Ich suche ein Kleid").send()
+        }
 
-alexaApp.intent("AMAZON.HelpIntent", function () {
-    console.log('Some needs your help');
-    let session = request.getSession();
-
-    let status= session.get("status")
-
-    switch (status) {
-        case "search":
-            response.say("Ich habe gerade" + product.name + " von " + product.brand + " für dich gefunden gefunden");
-            response.say("Du kannst entweder mehr Informationen zu dem Produkt haben oder");
-            response.say("Ich kann auch ähnlichen Artikel geben oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
-
-            return response.say("").send()
-            break;
-
-        case "start":
-                return response.say("Du wolltest mir grade sagen nach welchem Produkt ich suchen soll").send()
-            break;
-        default:
-            let speech = new Speech()
-                .say('Ich weiß auch gerade auch nicht')
-                .pause('300ms')
-                .say('sorry, sag doch einfach irgendwas?');
-            return response.say(speech.ssml(true));
+        let product = JSON.parse(session.get("product"));
+        response.say(`Ich lese dir eine kurze beschreibung zu deinem Produkt ${product.name} vor`);
+        response.say(`${product.description}`);
+        session.set("status", "detail");
 
     }
-});
+);
+
+alexaApp.intent("AMAZON.YesIntent", {
+        "slots": {},
+        "utterances": []
+    }, function (request, response) {
+
+        let session = request.getSession();
+
+        if(session.get("status")!=="d")
+
+        response.say("Tschüß, wenn du wieder etwas suchst frag mich einfach!");
+    }
+);
+
+alexaApp.intent("AMAZON.NoIntent", {
+        "slots": {},
+        "utterances": []
+    }, function (request, response) {
+        console.log('Stopped :(');
+        response.say("Tschüß, wenn du wieder etwas suchst frag mich einfach!");
+    }
+);
+
+alexaApp.intent("AMAZON.StopIntent", {
+        "slots": {},
+        "utterances": ["Ich mag nicht mehr"]
+    }, function (request, response) {
+        console.log('Stopped :(');
+        response.say("Tschüß, wenn du wieder etwas suchst frag mich einfach!");
+    }
+);
+
+alexaApp.intent("AMAZON.HelpIntent", {
+        "slots": {},
+        "utterances": ["Was muss ich tun", "Hilfe was habe ich gerade gemacht", "Was"]
+    }, function (request, response) {
+        console.log('Some needs your help');
+        let session = request.getSession();
+
+        let status = session.get("status");
+        response.shouldEndSession(false);
+
+        switch (status) {
+            case "search":
+                response.say("Ich habe gerade" + product.name + " von " + product.brand + " für dich gefunden gefunden");
+                response.say("Du kannst entweder mehr Informationen zu dem Produkt haben oder");
+                response.say("Ich kann auch ähnlichen Artikel geben oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+
+                return response.say("").send();
+                break;
+
+            case "start":
+                return response.say("Du wolltest mir grade sagen nach welchem Produkt ich suchen soll").send();
+                break;
+            case "detail":
+                return response.say("Ich habe gefragt, ob du dir das Produkt merken willst").send();
+                break;
+            default:
+                let speech = new Speech()
+                    .say('Ich weiß auch gerade auch nicht')
+                    .pause('300ms')
+                    .say('sorry, sag doch einfach irgendwas?');
+                return response.say(speech.ssml(true));
+
+        }
+    }
+);
+
 
 if (process.env.NODE_ENV !== 'production') {
-    fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
+    fs.writeFile('schema.json', alexaApp.schemas.askcli('bauer shopping'), (err) => {
         if (err) throw err;
         console.log('Wrote schema.json');
     });

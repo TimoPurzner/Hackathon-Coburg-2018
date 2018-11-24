@@ -1,8 +1,7 @@
+let utils = require('./utils.js');
+
 let request = require('request');
 
-const productBaseURL = 'https://www.baur.de/p/';
-const imageBaseURL = 'https://media.baur.de/i/empiriecom/';
-const searchBaseURL = 'https://www.baur.de/suche/serp/magellan';
 
 /**
  * Returns a URL for queryParams to share or save the query
@@ -30,7 +29,7 @@ function getFilters (query) {
             request(
                 {
                     method: 'POST',
-                    uri: searchBaseURL,
+                    uri: utils.searchBaseURL,
                     json: true,
                     headers: {
                         'Content-Type': 'application/json',
@@ -79,7 +78,7 @@ function getFilterOptions (query, option) {
             request(
                 {
                     method: 'POST',
-                    uri: searchBaseURL,
+                    uri: utils.searchBaseURL,
                     json: true,
                     headers: {
                         'Content-Type': 'application/json',
@@ -117,39 +116,20 @@ function getFilterOptions (query, option) {
 }
 
 /**
- * Returns URL of product image by id
- * @param string: imageId
- * @return string: URL
- *
- */
-function getProductImageURL (imageId) {
-    return imageBaseURL + imageId;
-}
-
-/**
- * Returns URL of product by search masterSku (article number) and sku (second article number)
- * @param string: masterSku
- * @param string: sku
- * @return string: URL
- *
- */
-function getProductURL (masterSku, sku) {
-    return productBaseURL + masterSku + '#sku=' + sku;
-}
-
-/**
  * Returns URL of top product by search query (query string example: 'iphone')
- * @param string: query
- * @return Object: {name, imageURL, url, description, brand}
+ * @param Object: queryObject (Object with mandatory query and filters key)
+ * @return Object: {name, imageURL, url, description, brand, price}
  *
  */
-function getTopProduct (query) {
+function getTopProduct (queryObject) {
+
     let productInformation = {
         name: '',
         imageURL: '',
         url: '',
         description: '',
-        brand: ''
+        brand: '',
+        price: ''
     };
 
     return new Promise(
@@ -157,7 +137,7 @@ function getTopProduct (query) {
             request(
                 {
                     method: 'POST',
-                    uri: searchBaseURL,
+                    uri: utils.searchBaseURL,
                     json: true,
                     headers: {
                         'Content-Type': 'application/json',
@@ -171,9 +151,8 @@ function getTopProduct (query) {
                         'channel': 'web',
                         'locale': 'de_DE',
                         'count': 1,
-                        //'order': 'price-desc',
-                        'brand': 'APPLE',
-                        'query': query
+                        'query': queryObject.query,
+                        'filters': queryObject.filters
                     }
                 },
                 function (error, response, body) {
@@ -182,10 +161,11 @@ function getTopProduct (query) {
 
                         productInformation = {
                             name: info.name,
-                            imageURL: getProductImageURL(info.images),
-                            url: getProductURL(info.masterSku, info.sku),
+                            imageURL: utils.getProductImageURL(info.images),
+                            url: utils.getProductURL(info.masterSku, info.sku),
                             description: info.description.replace(/<[^>]+>/g, ' '),
-                            brand: info.brand
+                            brand: info.brand,
+                            price: utils.getFormattedPrice(info.price.value, info.price.currency)
                         };
 
                         resolve(productInformation);
