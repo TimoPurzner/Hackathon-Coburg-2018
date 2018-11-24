@@ -168,7 +168,7 @@ alexaApp.intent("AMAZON.HelpIntent", function () {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
+    fs.writeFile('schema.json', alexaApp.schemas.askcli('go shopping'), (err) => {
         if (err) throw err;
         console.log('Wrote schema.json');
     });
