@@ -94,10 +94,6 @@ alexaApp.intent("SearchIntent", {
             return response.clear().say("Ein Fehler, es tut mir leid :(").send();
         });
 
-        // Save that thing
-
-        session.set(product, JSON.stringify(product));
-
         console.log("test response", product);
         //await search
         response.say("Ich habe " + product.name + " von " + product.brand + " gefunden");
@@ -115,6 +111,8 @@ alexaApp.intent("SearchIntent", {
             }
         });
 
+        session.set("product", JSON.stringify(product));
+        session.set("status", "search");
 
     }
 );
