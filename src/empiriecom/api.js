@@ -1,5 +1,8 @@
 let request = require('request');
 
+/**
+ * base urls
+ */
 const productBaseURL = 'https://www.baur.de/p/';
 const imageBaseURL = 'https://media.baur.de/i/empiriecom/';
 const searchBaseURL = 'https://www.baur.de/suche/serp/magellan';
@@ -48,17 +51,19 @@ function getProductURL (masterSku, sku) {
 
 /**
  * Returns URL of top product by search query (query string example: 'iphone')
- * @param string: query
- * @return Object: {name, imageURL, url, description, brand}
+ * @param Object: queryObject (Object with mandatory query and filter key)
+ * @return Object: {name, imageURL, url, description, brand, price}
  *
  */
-function getTopProduct (query) {
+function getTopProduct (queryObject) {
+
     let productInformation = {
         name: '',
         imageURL: '',
         url: '',
         description: '',
-        brand: ''
+        brand: '',
+        price: ''
     };
 
     return new Promise(
@@ -80,7 +85,8 @@ function getTopProduct (query) {
                         'channel': 'web',
                         'locale': 'de_DE',
                         'count': 1,
-                        'query': query
+                        'query': queryObject.query,
+                        'filters': queryObject.filters
                     }
                 },
                 function (error, response, body) {
@@ -92,7 +98,8 @@ function getTopProduct (query) {
                             imageURL: getProductImageURL(info.images),
                             url: getProductURL(info.masterSku, info.sku),
                             description: info.description.replace(/<[^>]+>/g, ' '),
-                            brand: info.brand
+                            brand: info.brand,
+                            price: getFormattedPrice(info.price.value, info.price.currency)
                         };
 
                         resolve(productInformation);
@@ -107,3 +114,9 @@ function getTopProduct (query) {
 }
 
 module.exports.getTopProduct = getTopProduct;
+
+function getFormattedPrice (price, currency) {
+    let tmpPrice = '' + parseFloat(Math.round(price * 100) / 100).toFixed(2);
+
+    return tmpPrice.replace('.', ',') + ' ' + currency;
+}
