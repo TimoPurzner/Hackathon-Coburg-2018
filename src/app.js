@@ -183,15 +183,15 @@ alexaApp.intent("AMAZON.YesIntent", {
 
         let product = JSON.parse(session.get("product"));
         console.log("FUCKING SHIT CARD", product);
-        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
+            text: `Du hast grade ein ${product.name} von ${product.brand} gefunden klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
         });
+        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
     }
 );
 
