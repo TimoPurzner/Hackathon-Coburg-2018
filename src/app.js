@@ -174,7 +174,7 @@ alexaApp.intent("SelectFilterIntent", {
         let filterOptionString = '';
 
         response.shouldEndSession(false);
-        await api.getFilters(session.get("query"), request.slots["FILTER_NAME"].value).then(fo => {
+        await api.getFilterOptions(session.get("query"), request.slots["FILTER_NAME"].value).then(fo => {
             filterOptions = fo;
         }).catch(e => {
             console.log(e.error);
