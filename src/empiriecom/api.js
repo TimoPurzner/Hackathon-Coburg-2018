@@ -1,11 +1,7 @@
+let utils = require('./utils.js');
+
 let request = require('request');
 
-/**
- * base urls
- */
-const productBaseURL = 'https://www.baur.de/p/';
-const imageBaseURL = 'https://media.baur.de/i/empiriecom/';
-const searchBaseURL = 'https://www.baur.de/suche/serp/magellan';
 
 /**
  * Returns a URL for queryParams to share or save the query
@@ -29,29 +25,8 @@ function getFilterOptions (query) {
 }
 
 /**
- * Returns URL of product image by id
- * @param string: imageId
- * @return string: URL
- *
- */
-function getProductImageURL (imageId) {
-    return imageBaseURL + imageId;
-}
-
-/**
- * Returns URL of product by search masterSku (article number) and sku (second article number)
- * @param string: masterSku
- * @param string: sku
- * @return string: URL
- *
- */
-function getProductURL (masterSku, sku) {
-    return productBaseURL + masterSku + '#sku=' + sku;
-}
-
-/**
  * Returns URL of top product by search query (query string example: 'iphone')
- * @param Object: queryObject (Object with mandatory query and filter key)
+ * @param Object: queryObject (Object with mandatory query and filters key)
  * @return Object: {name, imageURL, url, description, brand, price}
  *
  */
@@ -71,7 +46,7 @@ function getTopProduct (queryObject) {
             request(
                 {
                     method: 'POST',
-                    uri: searchBaseURL,
+                    uri: utils.searchBaseURL,
                     json: true,
                     headers: {
                         'Content-Type': 'application/json',
@@ -95,11 +70,11 @@ function getTopProduct (queryObject) {
 
                         productInformation = {
                             name: info.name,
-                            imageURL: getProductImageURL(info.images),
-                            url: getProductURL(info.masterSku, info.sku),
+                            imageURL: utils.getProductImageURL(info.images),
+                            url: utils.getProductURL(info.masterSku, info.sku),
                             description: info.description.replace(/<[^>]+>/g, ' '),
                             brand: info.brand,
-                            price: getFormattedPrice(info.price.value, info.price.currency)
+                            price: utils.getFormattedPrice(info.price.value, info.price.currency)
                         };
 
                         resolve(productInformation);
@@ -114,9 +89,3 @@ function getTopProduct (queryObject) {
 }
 
 module.exports.getTopProduct = getTopProduct;
-
-function getFormattedPrice (price, currency) {
-    let tmpPrice = '' + parseFloat(Math.round(price * 100) / 100).toFixed(2);
-
-    return tmpPrice.replace('.', ',') + ' ' + currency;
-}
