@@ -112,18 +112,8 @@ alexaApp.intent("SearchIntent", {
         response.say("Ich habe " + product.name + " von " + product.brand + " gefunden");
         response.say("Willst du mehr Informationen zu dem Produkt?");
         response.say("Ich kann auch weitere Artikel suchen oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+
         // Save relevant infos in session
-
-
-        response.card({
-            type: "Standard",
-            title: "Mac:Rush hat für dich gefunden!",
-            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url}`,
-            image: { // image is optional
-                smallImageUrl: product.imageURL, // required
-            }
-        });
-
         session.set("product", JSON.stringify(product));
         session.set("status", "search");
 
@@ -167,6 +157,7 @@ alexaApp.intent("DetailIntent", {
         let product = JSON.parse(session.get("product"));
         response.say(`Ich lese dir eine kurze beschreibung zu deinem Produkt ${product.name} vor`);
         response.say(`${product.description}`);
+        response.say("Möchtest du dir dieses Produkt Merken?");
         session.set("status", "detail");
 
     }
@@ -176,12 +167,20 @@ alexaApp.intent("AMAZON.YesIntent", {
         "slots": {},
         "utterances": []
     }, function (request, response) {
-
+        response.shouldEndSession(false);
         let session = request.getSession();
+        let product = JSON.parse(session.get("product"));
+        //if (session.get("status") !== "d")
 
-        if(session.get("status")!=="d")
-
-        response.say("Tschüß, wenn du wieder etwas suchst frag mich einfach!");
+        response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, was kann sonst für dich suchen");
+        response.card({
+            type: "Standard",
+            title: "Mac:Rush hat für dich gefunden!",
+            text: `Du hast grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url}`,
+            image: { // image is optional
+                smallImageUrl: product.imageURL, // required
+            }
+        });
     }
 );
 
@@ -189,8 +188,8 @@ alexaApp.intent("AMAZON.NoIntent", {
         "slots": {},
         "utterances": []
     }, function (request, response) {
-        console.log('Stopped :(');
-        response.say("Tschüß, wenn du wieder etwas suchst frag mich einfach!");
+
+        response.say("Ok, was kann ich sonst für dich tun?");
     }
 );
 
