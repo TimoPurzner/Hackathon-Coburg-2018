@@ -31,6 +31,8 @@ alexaApp.pre = (req, resp, type) => {
 
 alexaApp.launch(function (request, response) {
     console.log('Launched!');
+    let session = request.getSession();
+    session.set("status", "start");
     let speech = new Speech()
         .say('Guten Abend!')
         .pause('100ms')
@@ -105,7 +107,7 @@ alexaApp.intent("SearchIntent", {
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            text: "Du hast grade ein " + product.name + " klicke auf den folgenden Link um es dir nochmal anzuschauen\n" + product.url,
+            text: `Du hast grade ein <i> ${product.name} </i> gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n <a href='${product.url}'> ${product.url}</a>`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
@@ -126,7 +128,7 @@ alexaApp.intent("FilterIntent", {
         ]
     },
     async function (request, response) {
-
+        let session = request.getSession();
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
 
     }
@@ -135,6 +137,34 @@ alexaApp.intent("FilterIntent", {
 
 alexaApp.intent("AMAZON.StopIntent", function () {
     console.log('Stopped :(');
+});
+
+alexaApp.intent("AMAZON.HelpIntent", function () {
+    console.log('Some needs your help');
+    let session = request.getSession();
+
+    let status= session.get("status")
+
+    switch (status) {
+        case "search":
+            response.say("Ich habe gerade" + product.name + " von " + product.brand + " für dich gefunden gefunden");
+            response.say("Du kannst entweder mehr Informationen zu dem Produkt haben oder");
+            response.say("Ich kann auch ähnlichen Artikel geben oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+
+            return response.say("").send()
+            break;
+
+        case "start":
+                return response.say("Du wolltest mir grade sagen nach welchem Produkt ich suchen soll").send()
+            break;
+        default:
+            let speech = new Speech()
+                .say('Ich weiß auch gerade auch nicht')
+                .pause('300ms')
+                .say('sorry, sag doch einfach irgendwas?');
+            return response.say(speech.ssml(true));
+
+    }
 });
 
 if (process.env.NODE_ENV !== 'production') {
