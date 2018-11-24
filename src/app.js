@@ -177,6 +177,22 @@ alexaApp.intent("SelectFilterIntent", {
     }
 );
 
+
+alexaApp.intent("SetFilterIntent", {
+        "slots": {"VALUE": "VALUE"},
+        "utterances": [
+            "{}"
+        ]
+    },
+    async function (request, response) {
+        let session = request.getSession();
+        response.shouldEndSession(false);
+        console.log("SELECT FILTER INTENT", request.slots["VALUE"].value);
+        response.say("set filter intent"+request.slots["VALUE"].value);
+
+    }
+);
+
 alexaApp.intent("DetailIntent", {
         "slots": {},
         "utterances": [
