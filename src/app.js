@@ -94,7 +94,7 @@ alexaApp.intent("SearchIntent", {
 
         let filter = {};
 
-        console.log(request.slots["PRODUCT"]);
+        console.log('DER KUNDE WIIIIIIL DAS FOLGENDE PRODUKTT!!!!!',request.slots["PRODUCT"]);
 
         if (request.slots["COLOUR"]) {
             //TODO: get filter id fpr color
