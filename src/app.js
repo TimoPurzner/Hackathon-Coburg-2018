@@ -178,6 +178,7 @@ alexaApp.intent("AMAZON.YesIntent", {
 
 
         if (session.get("status") !== "detail") {
+            response.shouldEndSession(false);
             return response.say("Ja, was?").send();
         }
 
