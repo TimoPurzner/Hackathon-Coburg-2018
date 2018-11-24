@@ -1,4 +1,4 @@
-var request = require('request');
+let request = require('request');
 
 
 /**
