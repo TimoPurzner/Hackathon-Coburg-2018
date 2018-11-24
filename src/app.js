@@ -31,6 +31,8 @@ alexaApp.pre = (req, resp, type) => {
 
 alexaApp.launch(function (request, response) {
     console.log('Launched!');
+    let session = request.getSession();
+    session.set("status", "start");
     let speech = new Speech()
         .say('Guten Abend!')
         .pause('100ms')
@@ -42,45 +44,45 @@ alexaApp.launch(function (request, response) {
 
 var files = fs.readdirSync('dictionaries');
 for (var file in files) {
-  file = files[file];
-  if (file === '.gitkeep') continue;
-  const file_content = fs.readFileSync(path.join('dictionaries', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+    file = files[file];
+    if (file === '.gitkeep') continue;
+    const file_content = fs.readFileSync(path.join('dictionaries', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
 }
 
 files = fs.readdirSync('slots');
 for (var file in files) {
-  file = files[file];
-  if (file === '.gitkeep') continue;
-  const file_content = fs.readFileSync(path.join('slots', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+    file = files[file];
+    if (file === '.gitkeep') continue;
+    const file_content = fs.readFileSync(path.join('slots', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
-    "slots": {
-      "PRODUCT": "AMAZON.SearchQuery",
-      "CATEGORY": "CATEGORY",
-      "BRAND": "BRAND",
+        "slots": {
+            "PRODUCT": "AMAZON.SearchQuery",
+            "CATEGORY": "CATEGORY",
+            "BRAND": "BRAND",
+        },
+        "utterances": [
+            "Ich suche {PRODUCT}",
+            /*
+                  "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+                  "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+                  "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+                  "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+                  "{verb} mir {PRODUCT|CATEGORY}",
+                  "{verb} mir {BRAND} Produkte",
+                  "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+                  */
+        ],
     },
-    "utterances": [
-      "Ich suche {PRODUCT}",
-/*
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
-      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
-      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      "{verb} mir {PRODUCT|CATEGORY}",
-      "{verb} mir {BRAND} Produkte",
-      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      */
-    ],
-  },
-  async function(request, response) {
+    async function (request, response) {
         let session = request.getSession();
         /*
             {name, imageURL, url, description, brand}
@@ -105,7 +107,7 @@ alexaApp.intent("SearchIntent", {
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            text: "Du hast grade ein " + product.name + " klicke auf den folgenden Link um es dir nochmal anzuschauen\n" + product.url,
+            text: `Du **hast** grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
@@ -113,6 +115,8 @@ alexaApp.intent("SearchIntent", {
 
         session.set("product", JSON.stringify(product));
         session.set("status", "search");
+
+        response.shouldEndSession(false);
 
     }
 );
@@ -126,8 +130,10 @@ alexaApp.intent("FilterIntent", {
         ]
     },
     async function (request, response) {
+        let session = request.getSession();
 
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
+        response.shouldEndSession(false);
 
     }
 );
@@ -137,8 +143,37 @@ alexaApp.intent("AMAZON.StopIntent", function () {
     console.log('Stopped :(');
 });
 
+alexaApp.intent("AMAZON.HelpIntent", function (request, response) {
+    console.log('Some needs your help');
+    let session = request.getSession();
+
+    let status = session.get("status");
+    response.shouldEndSession(false);
+
+    switch (status) {
+        case "search":
+            response.say("Ich habe gerade" + product.name + " von " + product.brand + " für dich gefunden gefunden");
+            response.say("Du kannst entweder mehr Informationen zu dem Produkt haben oder");
+            response.say("Ich kann auch ähnlichen Artikel geben oder du kannst die suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+
+            return response.say("").send()
+            break;
+
+        case "start":
+            return response.say("Du wolltest mir grade sagen nach welchem Produkt ich suchen soll").send()
+            break;
+        default:
+            let speech = new Speech()
+                .say('Ich weiß auch gerade auch nicht')
+                .pause('300ms')
+                .say('sorry, sag doch einfach irgendwas?');
+            return response.say(speech.ssml(true));
+
+    }
+});
+
 if (process.env.NODE_ENV !== 'production') {
-    fs.writeFile('schema.json', alexaApp.schemas.skillBuilder(), (err) => {
+    fs.writeFile('schema.json', alexaApp.schemas.askcli('bauer shopping'), (err) => {
         if (err) throw err;
         console.log('Wrote schema.json');
     });
