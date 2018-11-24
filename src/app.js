@@ -107,7 +107,7 @@ alexaApp.intent("SearchIntent", {
         response.card({
             type: "Standard",
             title: "Mac:Rush hat für dich gefunden!",
-            text: `Du hast grade ein <i> ${product.name} </i> gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n <a href='${product.url}'> ${product.url}</a>`,
+            text: `Du **hast** grade ein ${product.name} gesucht klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
             }
