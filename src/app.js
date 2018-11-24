@@ -153,7 +153,8 @@ alexaApp.intent("FilterIntent", {
             }
         }
 
-        response.say("Für dein Produkt gibt es folgende Filter wähl einfach einen davon aus. " + filterString);
+        session.set("filter_names", JSON.stringify(filters));
+        response.say("Für dein Produkt gibt es folgende Filter wähle einfach einen davon aus. " + filterString);
         response.shouldEndSession(false);
 
     }
@@ -168,13 +169,33 @@ alexaApp.intent("SelectFilterIntent", {
     },
     async function (request, response) {
         let session = request.getSession();
+        let filterOptions = {};
+        let filterOptionString = '';
 
         response.shouldEndSession(false);
+        await api.getFilters(session.get("query"), request.slots["FILTER_NAME"].value).then(fo => {
+            filterOptions = fo;
+        }).catch(e => {
+            console.log(e.error);
+            return response.clear().say("Ein Fehler, es tut mir leid :(").send();
+        });
+
+        for (let key in filterOptions) {
+            if (filterOptions.hasOwnProperty(key)) {
+                if(filterOptionString === '')
+                    filterOptionString += filterOptions[key];
+                else
+                    filterOptionString += '. ' + filterOptions[key];
+            }
+        }
+
+
         console.log("SELECT FILTER INTENT", request.slots["FILTER_NAME"].value);
 
         session.set("filter_name", request.slots["FILTER_NAME"].value);
 
-        response.say(request.slots["FILTER_NAME"].value);
+        response.say("Für deinen Filter gibt es folgende Filteroptionen. Wähle bitte deine, oder mehrere davon aus. " + filterOptionString);
+        //response.say(request.slots["FILTER_NAME"].value);
 
     }
 );
