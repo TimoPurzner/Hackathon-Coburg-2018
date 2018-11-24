@@ -117,6 +117,7 @@ alexaApp.intent("SearchIntent", {
         // Save relevant infos in session
         session.set("product", JSON.stringify(product));
         session.set("status", "search");
+        session.set("query", request.slots["PRODUCT"].value);
 
         response.shouldEndSession(false);
 
@@ -135,7 +136,7 @@ alexaApp.intent("FilterIntent", {
         let session = request.getSession();
         response.shouldEndSession(false);
         //TODO: get Filter möglichkeiten
-        await api.getFilters("iPhone").then(f =>{
+        await api.getFilters(session.get("query")).then(f =>{
 
         });
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus." + filters.toString());
