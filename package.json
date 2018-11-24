@@ -13,6 +13,8 @@
     "alexa-app": "^4.2.3",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "fast-csv": "^2.4.1",
+    "fs": "^0.0.1-security",
     "pug": "^2.0.3",
     "request": "^2.88.0",
     "ssml-builder": "^0.4.3"

@@ -116,7 +116,7 @@ function getFilterOptions (query, option) {
 }
 
 /**
- * Returns URL of top product by search query (query string example: 'iphone')
+ * Returns URL of top product by query object
  * @param Object: queryObject (Object with mandatory query and filters key)
  * @return Object: {name, imageURL, url, description, brand, price}
  *
