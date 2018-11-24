@@ -44,45 +44,45 @@ alexaApp.launch(function (request, response) {
 
 var files = fs.readdirSync('dictionaries');
 for (var file in files) {
-  file = files[file];
-  if (file === '.gitkeep') continue;
-  const file_content = fs.readFileSync(path.join('dictionaries', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
+    file = files[file];
+    if (file === '.gitkeep') continue;
+    const file_content = fs.readFileSync(path.join('dictionaries', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n');
 }
 
 files = fs.readdirSync('slots');
 for (var file in files) {
-  file = files[file];
-  if (file === '.gitkeep') continue;
-  const file_content = fs.readFileSync(path.join('slots', file));
-  const file_name = path.basename(file, '.csv');
-  alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
+    file = files[file];
+    if (file === '.gitkeep') continue;
+    const file_content = fs.readFileSync(path.join('slots', file));
+    const file_name = path.basename(file, '.csv');
+    alexaApp.customSlot(file_name.toUpperCase(), alexaApp.dictionary[file_name] = file_content.toString().trim().replace('\r', '').split('\n'));
 }
 
 alexaApp.intent("SearchIntent", {
-    "slots": {
-      "PRODUCT": "AMAZON.SearchQuery",
-      "CATEGORY": "CATEGORY",
-      "BRAND": "BRAND",
+        "slots": {
+            "PRODUCT": "AMAZON.SearchQuery",
+            "CATEGORY": "CATEGORY",
+            "BRAND": "BRAND",
+        },
+        "utterances": [
+            "Ich suche {PRODUCT}",
+            /*
+                  "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
+                  "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
+                  "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
+                  "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
+                  "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
+                  "{verb} mir {PRODUCT|CATEGORY}",
+                  "{verb} mir {BRAND} Produkte",
+                  "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
+                  */
+        ],
     },
-    "utterances": [
-      "Ich suche {PRODUCT}",
-/*
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Ich {verb} {quantity} {brand} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "Wir {verb} (attribute} {size|COLOUR|weight}  {PRODUCT|CATEGORY} von {BRAND}",
-      "Ich {verb} {quantity} {size|COLOUR|weight} {PRODUCT|CATEGORY} von {BRAND}",
-      "Wir {verb} {attribute} {size|COLOUR|weight} {PRODUCT|CATEGORY}",
-      "{verb} mir {quantity} {size|COLOUR|weight} {PRODUCT} von {BRAND}",
-      "{verb} uns {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      "{verb} mir {PRODUCT|CATEGORY}",
-      "{verb} mir {BRAND} Produkte",
-      "{verb} uns {quantity} {size|COLOUR|weight} {BRAND} {PRODUCT}",
-      */
-    ],
-  },
-  async function(request, response) {
+    async function (request, response) {
         let session = request.getSession();
         /*
             {name, imageURL, url, description, brand}
@@ -116,6 +116,8 @@ alexaApp.intent("SearchIntent", {
         session.set("product", JSON.stringify(product));
         session.set("status", "search");
 
+        response.shouldEndSession(false);
+
     }
 );
 
@@ -129,7 +131,9 @@ alexaApp.intent("FilterIntent", {
     },
     async function (request, response) {
         let session = request.getSession();
+
         response.say("Für dein Produkt gibt es folgende Filter Wähl einfach einen davon aus");
+        response.shouldEndSession(false);
 
     }
 );
@@ -139,11 +143,12 @@ alexaApp.intent("AMAZON.StopIntent", function () {
     console.log('Stopped :(');
 });
 
-alexaApp.intent("AMAZON.HelpIntent", function () {
+alexaApp.intent("AMAZON.HelpIntent", function (request, response) {
     console.log('Some needs your help');
     let session = request.getSession();
 
-    let status= session.get("status")
+    let status = session.get("status");
+    response.shouldEndSession(false);
 
     switch (status) {
         case "search":
@@ -155,7 +160,7 @@ alexaApp.intent("AMAZON.HelpIntent", function () {
             break;
 
         case "start":
-                return response.say("Du wolltest mir grade sagen nach welchem Produkt ich suchen soll").send()
+            return response.say("Du wolltest mir grade sagen nach welchem Produkt ich suchen soll").send()
             break;
         default:
             let speech = new Speech()
