@@ -153,7 +153,7 @@ alexaApp.intent("FilterIntent", {
             }
         }
 
-        response.say("Für dein Produkt gibt es folgende Filter wähl einfach einen davon aus" + filterString);
+        response.say("Für dein Produkt gibt es folgende Filter wähl einfach einen davon aus. " + filterString);
         response.shouldEndSession(false);
 
     }
@@ -171,6 +171,9 @@ alexaApp.intent("SelectFilterIntent", {
 
         response.shouldEndSession(false);
         console.log("SELECT FILTER INTENT", request.slots["FILTER_NAME"].value);
+
+        session.set("filter_name", request.slots["FILTER_NAME"].value);
+
         response.say(request.slots["FILTER_NAME"].value);
 
     }
