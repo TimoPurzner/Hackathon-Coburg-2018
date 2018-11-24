@@ -17,11 +17,102 @@ function getProductQueryString (... queryParams) {
 /**
  * Returns an object with filter options for search query (query string example: 'iphone')
  * @param string: query
+ * @return Object: filters
+ *
+ */
+function getFilters (query) {
+    let filters = {
+    };
+
+    return new Promise(
+        function (resolve, reject) {
+            request(
+                {
+                    method: 'POST',
+                    uri: utils.searchBaseURL,
+                    json: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': '*/*',
+                        'user-agent':'*'
+                    },
+                    body: {
+                        'start': 0,
+                        'clientId': 'BaurDe',
+                        'version': 42,
+                        'channel': 'web',
+                        'locale': 'de_DE',
+                        'count': 1,
+                        'query': query
+                    }
+                },
+                function (error, response, body) {
+                    if(response.statusCode === 200){
+                        var data = response.body.searchresult.result.filters;
+                        for (var i = 0; i < data.length; i++) {
+                            filters[data[i].id] = data[i].displayName;
+                        }
+                        resolve(filters);
+                    } else {
+                        reject({error: 'could not retrieve top product'});
+                        console.log('error: '+ response.statusCode);
+                    }
+                }
+            );
+        });
+}
+
+/**
+ * Returns an object with filter options for search query (query string example: 'iphone')
+ * @param string: query
+ * @param string: option
  * @return Object: filterOptions
  *
  */
-function getFilterOptions (query) {
-    return {};
+function getFilterOptions (query, option) {
+    let filterOptions = {
+    };
+
+    return new Promise(
+        function (resolve, reject) {
+            request(
+                {
+                    method: 'POST',
+                    uri: utils.searchBaseURL,
+                    json: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': '*/*',
+                        'user-agent':'*'
+                    },
+                    body: {
+                        'start': 0,
+                        'clientId': 'BaurDe',
+                        'version': 42,
+                        'channel': 'web',
+                        'locale': 'de_DE',
+                        'count': 1,
+                        'query': query
+                    }
+                },
+                function (error, response, body) {
+                    if(response.statusCode === 200){
+                        var data = response.body.searchresult.result.filters;
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].id == option) {
+                                for (var index = 0; index < 3; index++) {
+                                    filterOptions[data[i].values[index].valueId] = data[i].values[index].valueDisplayName;        
+                                }
+                            } 
+                        }
+                        resolve(filterOptions);
+                    } else {
+                        reject({error: 'could not retrieve top product'});
+                        console.log('error: '+ response.statusCode);
+                    }
+                }
+            );
+        });
 }
 
 /**
@@ -89,3 +180,5 @@ function getTopProduct (queryObject) {
 }
 
 module.exports.getTopProduct = getTopProduct;
+module.exports.getFilters = getFilters;
+module.exports.getFilterOptions = getFilterOptions;
