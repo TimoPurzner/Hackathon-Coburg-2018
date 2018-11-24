@@ -6,6 +6,7 @@ var alexa = require("alexa-app");
 var Speech = require('ssml-builder');
 
 var api = require('./empiriecom/api');
+var utils = require('./empiriecom/utils');
 
 var PORT = process.env.PORT || 8080;
 var app = express();
@@ -194,8 +195,7 @@ alexaApp.intent("SelectFilterIntent", {
 
         session.set("filter_name", request.slots["FILTER_NAME"].value);
 
-        response.say("Für deinen Filter gibt es folgende Filteroptionen. Wähle bitte eine, oder mehrere davon aus. " + filterOptionString);
-        //response.say(request.slots["FILTER_NAME"].value);
+        response.say("Für deinen Filter gibt es folgende Filteroptionen, wähle bitte einen aus. " + filterOptionString);
 
     }
 );
@@ -210,8 +210,39 @@ alexaApp.intent("SetFilterIntent", {
     async function (request, response) {
         let session = request.getSession();
         response.shouldEndSession(false);
-        console.log("SELECT FILTER INTENT", request.slots["VALUE"].value);
-        response.say("set filter intent"+request.slots["VALUE"].value);
+
+        let filterObject = {};
+        let product = {};
+
+        await utils.mapFilterToCode(session.get("filter_name"), request.slots["VALUE"].value)
+            .then(async a => {
+                await utils.buildFilterObject(a)
+                    .then(b => {
+                        filterObject = b;
+                    })
+            });
+
+        console.log("here should be a filter object: " + filterObject);
+
+        await api.getTopProduct({query: session.get("query"), filters: filterObject}).then(p => {
+            console.log(p);
+            product = p;
+        }).catch(e => {
+            console.log(e.error);
+            return response.clear().say("Ein Fehler, es tut mir leid :(").send();
+        });
+
+        //await search
+        response.say("Ich habe " + product.name + " von " + product.brand + " gefunden es kostet " + product.price);
+        response.say("Willst du mehr Informationen zu dem Produkt?");
+        response.say("Ich kann auch weitere Artikel suchen oder du kannst die Suche mit Filtern eingrenzen, frag einfach nach verfügbaren Filtern");
+
+        // Save relevant infos in session
+        session.set("product", JSON.stringify(product));
+        session.set("status", "search");
+        session.set("query", request.slots["PRODUCT"].value);
+
+        console.log("SELECT SET FILTER INTENT", request.slots["VALUE"].value);
 
     }
 );
