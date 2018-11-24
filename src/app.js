@@ -176,6 +176,7 @@ alexaApp.intent("SelectFilterIntent", {
         let filter_name = request.slots["FILTER_NAME"].value === 'farbe' ? 'filter_color' : request.slots["FILTER_NAME"].value
 
         response.shouldEndSession(false);
+        console.console.log('FN:', filter_name);
         await api.getFilterOptions(session.get("query"), filter_name).then((fo) => {
             console.console.log('FO:', fo);
             filterOptions = fo;
