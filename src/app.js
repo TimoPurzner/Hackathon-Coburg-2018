@@ -261,6 +261,7 @@ alexaApp.intent("AMAZON.YesIntent", {
             text: `Du hast grade ein ${product.name} von ${product.brand} gefunden klicke auf den folgenden Link um es dir nochmal anzuschauen\n ${product.url} \n Preis: ${product.price}`,
             image: { // image is optional
                 smallImageUrl: product.imageURL, // required
+                largeImageUrl: product.imageURL
             }
         });
         response.say("Schau einfach in deine Alexa App, dort findest du das Produkt, bis zum nächsten mal");
