@@ -24,15 +24,15 @@ Der Skill ist gemountet unter der Route `/test`. Der Endpunkt (Heroku oder ngrok
 
 # Alexa Skill Schema
 
-Da das Schema mehrere Tausend zeilen lang ist (da es jeden Brand namen Enhält, damit Alexa diese besser versteht) wurde es als [File](https://github.com/ZeroSoulEater/Hackathon-Coburg-2018/blob/master/Schema.json) in diesem Projekt bereitgestellt.
+Da das Schema mehrere Tausend zeilen lang ist (da es z.B. jeden verfügbaren Brand Enhält, damit Alexa diese besser versteht) wurde es als [File](https://github.com/ZeroSoulEater/Hackathon-Coburg-2018/blob/master/Schema.json) in diesem Projekt bereitgestellt.
 
-Eine Beispielunterhaltung mit Dem Skill wäre:
+Eine Beispielunterhaltung mit dem Skill wäre:
 
 **Mensch:** Alexa, starte baur shopping.<br/>
 **Alexa:** Guten Abend … Wonach suchst du heute?<br/>
 **Mensch:** Ich suche ein Kleid.<br/>
 **Alexa:** Ich habe XY von MARKE gefunden. … Möchtest du mehr Infomrationen oder einen Filter setzen?<br/>
-**Mensch:** Zeig mir verfügbare filter.<br/>
+**Mensch:** Zeig mir verfügbare Filter.<br/>
 **Alexa:** *Liest verfügbare Filter für das Produkt vor*<br/>
 **Mensch:** setzte filter *FILTERNAME*<br/>
 **Alexa:** *Liest verfügbare werte für den Filter vor*<br/>
