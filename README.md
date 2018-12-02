@@ -24,6 +24,25 @@ Der Skill ist gemountet unter der Route `/test`. Der Endpunkt (Heroku oder ngrok
 
 # Alexa Skill Schema
 
-<ToDo: Einfügen />
+Da das Schema mehrere Tausend zeilen lang ist (da es jeden Brand namen Enhält, damit Alexa diese besser versteht) wurde es als [File](https://github.com/ZeroSoulEater/Hackathon-Coburg-2018/blob/master/Schema.json) in diesem Projekt bereitgestellt.
+
+Eine Beispielunterhaltung mit Dem Skill wäre:
+
+**Mensch:** Alexa, starte baur shopping.<br/>
+**Alexa:** Guten Abend … Wonach suchst du heute?<br/>
+**Mensch:** Ich suche ein Kleid.<br/>
+**Alexa:** Ich habe XY von MARKE gefunden. … Möchtest du mehr Infomrationen oder einen Filter setzen?<br/>
+**Mensch:** Zeig mir verfügbare filter.<br/>
+**Alexa:** *Liest verfügbare Filter für das Produkt vor*<br/>
+**Mensch:** setzte filter *FILTERNAME*<br/>
+**Alexa:** *Liest verfügbare werte für den Filter vor*<br/>
+**Mensch:** Übernimm den Wert *WERT*<br/>
+**Alexa:** Ich habe Produkt XY von MARKE gefunden … … … <br/>
+(NOTE: Es wurde eine weitere suchanfrage mit dem gesetzen Filter und dem selben such Begriff, in diesemfall ein Kleid, gemacht)<br/>
+**Mensch:** Zeige mehr Informationen.<br/>
+**Alexa:** *Liest die Kurzbeschreibung des Produktes vor*. Möchtest du dir dieses Produkt merken?<br/>
+**Mensch:** Ja<br/>
+**Alexa:** Ok Schau auf dein Handy, für mehr Informationen.
+
 
 
